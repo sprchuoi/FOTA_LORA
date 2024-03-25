@@ -23,9 +23,6 @@
 #define __SX1278_IF_H__
 #include "SX1278.h"
 #include "main.h"
-#define ADDR_MASTER  0x123
-#define ADDR_NODE_1  0x01
-#define ADDR_NODE_2  0x02
 #define NULL_DATA 0
 typedef enum{
 	LORA_OKE = 0,
@@ -35,7 +32,7 @@ typedef enum{
 	LORA_FLASHING = 0x32
 } LoRa_Return_t;
 
-LoRa_Return_t LORA_IF_Stransmit_Request(SX1278_t *module , uint8_t addr ,uint8_t ACK_req);
-uint8_t LORA_IF_GetData_Frame(SX1278_t *module , uint8_t* buffer , uint8_t ret , uint32_t timeout , uint8_t length ,uint8_t addr);
+LoRa_Return_t LORA_IF_Stransmit_Request(SX1278_t *module , uint8_t* buffer,uint8_t addr ,uint8_t ACK_req);
+uint8_t LORA_IF_GetData_Frame(SX1278_t *module , uint8_t* buffer , uint8_t ret , uint32_t timeout , uint8_t length );
 LoRa_Return_t LORA_IF_Stransmit_Data_Frame(SX1278_t *module, uint8_t *txBuffer, uint8_t length, uint32_t timeout);
 #endif /*__SX1278_IF_H__*/

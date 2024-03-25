@@ -49,8 +49,10 @@ SX1278_hw_t SX1278_hw;
 SX1278_t SX1278;
 
 /* USER CODE BEGIN PV */
-char buffer_MISO[130] = "";
-char buffer_MOSI[130] = "";
+uint8_t buffer_MISO[130] ;
+uint8_t buffer_MOSI[130] ;
+
+uint8_t ret ;
 
 /* USER CODE END PV */
 
@@ -96,7 +98,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_IWDG_Init();
+  //MX_IWDG_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 

@@ -1,0 +1,14 @@
+../Core/Src/BL_Program.c:26:17:BL_u32ReadAddressData	1
+../Core/Src/BL_Program.c:31:6:BL_voidBootLoader_Init	3
+../Core/Src/BL_Program.c:51:6:BL_voidCheckActiveRegion	7
+../Core/Src/BL_Program.c:86:10:BL_32CheckBackupRegion	4
+../Core/Src/BL_Program.c:105:6:BL_voidJumpToActiveRegion	1
+../Core/Src/BL_Program.c:122:6:BL_voidJumpToBootloader	1
+../Core/Src/BL_Program.c:130:6:BL_voidCopyImageToActiveRegion	2
+../Core/Src/BL_Program.c:165:6:BL_voidCopyImageToBackupRegion	2
+../Core/Src/BL_Program.c:202:6:BL_voidEraseRestoreHeaderPage	4
+../Core/Src/BL_Program.c:240:6:BL_voidSetBranchingFlagAndMakeSWR	1
+../Core/Src/BL_Program.c:248:6:BL_voidUpdateHeaders	2
+../Core/Src/BL_Program.c:281:6:BL_voidReceiveUpdate	10
+../Core/Src/BL_Program.c:358:6:BL_voidFinishBootLoader	1
+../Core/Src/BL_Program.c:365:6:BL_voidMakeSoftWareReset	2

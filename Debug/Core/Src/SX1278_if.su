@@ -1,0 +1,2 @@
+../Core/Src/SX1278_if.c:13:9:LORA_IF_GetData_Frame	24	static
+../Core/Src/SX1278_if.c:29:15:LORA_IF_Stransmit_Request	24	static

@@ -247,16 +247,15 @@ void BL_voidSetBranchingFlagAndMakeSWR(void)
 
 void BL_voidUpdateHeaders(void)
 {
-	uint8_t  Local_u8DataArray[8]              = {BL_INITIALIZE_WITH_ZERO};
 	uint32_t Local_u32ActiveRegionStatus       = BL_INITIALIZE_WITH_ZERO;
 	uint32_t Local_u32ImageSizeInBytes         = BL_INITIALIZE_WITH_ZERO;
 
 	Local_u32ActiveRegionStatus = BL_u32ReadAddressData(FLAG_STATUS_ACTIVE_REGION_ADDRESS);
 	//Structure LoRa Transmit
-	LORA_IF_Stransmit_Request(&SX1278, ADDR_MASTER, MCU_ENTER_FLASHMODE);
+	LORA_IF_Stransmit_Request(&SX1278, (uint8_t*) buffer_MOSI , ADDR_NODE_1, MCU_ENTER_FLASHMODE);
 	/*Wait For Flashing Request Form GW*/
 	while( LORA_IF_GetData_Frame(&SX1278, (uint8_t*) buffer_MISO, ret, 2000, 16)!= GW_PROVIDE_HEADER ){
-		LORA_IF_Stransmit_Request(&SX1278, ADDR_MASTER, MCU_ENTER_FLASHMODE);
+		LORA_IF_Stransmit_Request(&SX1278,(uint8_t*) buffer_MOSI, ADDR_NODE_1, MCU_ENTER_FLASHMODE);
 	}
 	/*Response Goto Programming and Send Update Request */
 	buffer_MISO[0] = NULL_DATA ;
@@ -286,7 +285,6 @@ void BL_voidReceiveUpdate(void)
 	uint32_t Local_u32LowByteDataReceive  						  = BL_INITIALIZE_WITH_ZERO;
 	uint32_t Local_u32InactiveImageAddressCounter                 = ACTIVE_IMAGE_START_ADDRESS;
 	uint32_t Local_u32SizeOfCode 								  = BL_u32ReadAddressData(FLAG_STATUS_SIZE_ACTIVE_REGION_ADDRESS);
-	uint8_t	 Local_u8HeaderFlag                					  = BL_INITIALIZE_WITH_ZERO;
 
 	FLASH_EraseInitTypeDef Local_eraseInfo;
 	uint32_t Local_u32PageError;
@@ -299,66 +297,66 @@ void BL_voidReceiveUpdate(void)
 	HAL_FLASH_Unlock(); //Unlocks the flash memory
 	HAL_FLASHEx_Erase(&Local_eraseInfo, &Local_u32PageError); //Deletes given sectors
 	HAL_FLASH_Lock();  //Locks again the flash memory
-	LORA_IF_Stransmit_Request(&SX1278, ADDR_MASTER, MCU_RECEIVED_SIZE_CODE);
+	LORA_IF_Stransmit_Request(&SX1278,(uint8_t*) buffer_MOSI,  ADDR_NODE_1, MCU_RECEIVED_SIZE_CODE);
 	//Structure CAN Transmit
 	while(LORA_IF_GetData_Frame(&SX1278, (uint8_t*) buffer_MISO, ret, 2000, 16)!= GW_FLASH_COMMAND){
-		LORA_IF_Stransmit_Request(&SX1278, ADDR_MASTER, MCU_RECEIVED_SIZE_CODE);
+		LORA_IF_Stransmit_Request(&SX1278,(uint8_t*) buffer_MOSI ,  ADDR_NODE_1, MCU_RECEIVED_SIZE_CODE);
 	}
 	//Loop to receive code update
-	while(Local_u32SizeOfCode)
+	while(Local_u32SizeOfCode || LORA_IF_GetData_Frame(&SX1278, (uint8_t*) buffer_MISO, ret, 2000, 16) == GW_ACKNOWLEDGE_FINISHING_SENDING_CODE)
 	{
 
-		while(LORA_IF_GetData_Frame(&SX1278, (uint8_t*) buffer_MISO, ret, 2000, 16)!= GW_FLASH_COMMAND){
-				LORA_IF_Stransmit_Request(&SX1278, ADDR_MASTER, MCU_REQUEST_PACKET);
+		while(LORA_IF_GetData_Frame(&SX1278, (uint8_t*) buffer_MISO, ret, 2000, 16) == 0 ){
+				LORA_IF_Stransmit_Request(&SX1278,(uint8_t*) buffer_MOSI,  ADDR_NODE_1, MCU_REQUEST_PACKET);
 		}
-		if (Local_u32SizeOfCode > 8){
-			CAN_IF_Receive_Data_Frame(Local_u8DataArray);
-			Local_u32HighByteDataReceive = (Local_u8DataArray[7] << SHIFT_24_BIT) | (Local_u8DataArray[6] << SHIFT_16_BIT)
-										| (Local_u8DataArray[5] << SHIFT_8_BIT) | (Local_u8DataArray[4] << SHIFT_0_BIT) ;
-			Local_u32LowByteDataReceive  = (Local_u8DataArray[3] << SHIFT_24_BIT) | (Local_u8DataArray[2] << SHIFT_16_BIT)
-										| (Local_u8DataArray[1] << SHIFT_8_BIT) | (Local_u8DataArray[0] << SHIFT_0_BIT) ;
+		if (Local_u32SizeOfCode > 128){
+			for(uint8_t i = 0 ; i < 16 ; i++){
+				uint8_t bit_shift = (7*i+1);
+				Local_u32HighByteDataReceive = (Local_u8DataArray[8+bit_shift] << SHIFT_24_BIT) | (Local_u8DataArray[7+bit_shift] << SHIFT_16_BIT)
+											| (Local_u8DataArray[6+ bit_shift] << SHIFT_8_BIT) | (Local_u8DataArray[5+bit_shift] << SHIFT_0_BIT) ;
+			    Local_u32LowByteDataReceive  = (Local_u8DataArray[4 + bit_shift] << SHIFT_24_BIT) | (Local_u8DataArray[3 + bit_shift] << SHIFT_16_BIT)
+											| (Local_u8DataArray[2 + bit_shift] << SHIFT_8_BIT) | (Local_u8DataArray[1+bit_shift] << SHIFT_0_BIT) ;
 
-			HAL_FLASH_Unlock(); //Unlocks the flash memory
-			HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter, Local_u32LowByteDataReceive);
-			HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter + 4, Local_u32HighByteDataReceive);
-			HAL_FLASH_Lock();  //Locks again the flash memory
+				HAL_FLASH_Unlock(); //Unlocks the flash memory
+				HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter, Local_u32LowByteDataReceive);
+				HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter + 4, Local_u32HighByteDataReceive);
+				HAL_FLASH_Lock();  //Locks again the flash memory
 
-			Local_u32InactiveImageAddressCounter += 8;
-			Local_u32SizeOfCode -= 8;
+				Local_u32InactiveImageAddressCounter += 8;
+				Local_u32SizeOfCode -= 8;
+			}
 		}
 		else{
-			CAN_IF_Receive_Data_Frame(Local_u8DataArray);
+			for(uint8_t i = 0 ; i < 16 ; i++){
+				uint8_t bit_shift = (7*i+1);
+				Local_u32HighByteDataReceive = (Local_u8DataArray[8+bit_shift] << SHIFT_24_BIT) | (Local_u8DataArray[6+bit_shift] << SHIFT_16_BIT)
+											| (Local_u8DataArray[6+bit_shift] << SHIFT_8_BIT) | (Local_u8DataArray[5+bit_shift] << SHIFT_0_BIT) ;
+				Local_u32LowByteDataReceive  = (Local_u8DataArray[4+bit_shift] << SHIFT_24_BIT) | (Local_u8DataArray[3+bit_shift] << SHIFT_16_BIT)
+											| (Local_u8DataArray[2+bit_shift] << SHIFT_8_BIT) | (Local_u8DataArray[1+bit_shift] << SHIFT_0_BIT) ;
 
-			Local_u32HighByteDataReceive = (Local_u8DataArray[7] << SHIFT_24_BIT) | (Local_u8DataArray[6] << SHIFT_16_BIT)
-										| (Local_u8DataArray[5] << SHIFT_8_BIT) | (Local_u8DataArray[4] << SHIFT_0_BIT) ;
-			Local_u32LowByteDataReceive  = (Local_u8DataArray[3] << SHIFT_24_BIT) | (Local_u8DataArray[2] << SHIFT_16_BIT)
-										| (Local_u8DataArray[1] << SHIFT_8_BIT) | (Local_u8DataArray[0] << SHIFT_0_BIT) ;
-
-			HAL_FLASH_Unlock(); //Unlocks the flash memory
-			HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter, Local_u32LowByteDataReceive);
-			if(RxHeader.DLC > 4){
+				HAL_FLASH_Unlock(); //Unlocks the flash memory
+				HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter, Local_u32LowByteDataReceive);
 				HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter + 4, Local_u32HighByteDataReceive);
+
 			}
 			HAL_FLASH_Lock();  //Locks again the flash memory
 
 			Local_u32SizeOfCode -= Local_u32SizeOfCode ;
 		}
-		CAN_IF_Transmit_UDS_Request(NODE_ID_ONE, UDS_MCU_ACKNOWLEDGE_LINE_OF_CODE_RECEIVED);
+		/* Send To notify GW Send the next packet*/
+		while(LORA_IF_GetData_Frame(&SX1278, (uint8_t*) buffer_MISO, ret, 2000, 16) == 0){
+			LORA_IF_Stransmit_Request(&SX1278, (uint8_t*) buffer_MOSI , ADDR_NODE_1, MCU_WRITE_SUCCESS);
+		}
 	}
 	// Wait for finish code of GW
-	CAN_IF_Receive_UDS_Respond(&Local_u8HeaderFlag);
-
-	if (Local_u8HeaderFlag == UDS_GWY_ACKNOWLEDGE_FINISHING_SENDING_CODE)
-	{
-		BL_voidFinishBootLoader();
+	while(LORA_IF_GetData_Frame(&SX1278, (uint8_t*) buffer_MISO, ret, 2000, 16) != GW_ACKNOWLEDGE_FINISHING_SENDING_CODE ){
+		LORA_IF_Stransmit_Request(&SX1278,(uint8_t*) buffer_MOSI,  ADDR_NODE_1, MCU_REQUEST_PACKET);
 	}
+		BL_voidFinishBootLoader();
 }
 
 void BL_voidFinishBootLoader(void)
 {
-	//Structure CAN Transmit
-	CAN_IF_Transmit_UDS_Request(NODE_ID_ONE, UDS_MCU_ACKNOWLEDGE_FINISHING);
-
 	BL_voidEraseRestoreHeaderPage(FLAG_STATUS_ACTIVE_REGION_ADDRESS , BR_SET_IMAGE_ACTIVE);
 	BL_voidEraseRestoreHeaderPage(FLAG_STATUS_BOOTLOADER , BL_RESET_BRANCHING_FLAG);
 	BL_voidMakeSoftWareReset();

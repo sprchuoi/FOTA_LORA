@@ -104,7 +104,8 @@
 #define MCU_CHECK_SECTOR_FINISHING                  	0x35
 #define MCU_ACCEPT_RECEIVING_PACKET_OF_CODE     		0x36
 #define MCU_ACKNOWLEDGE_LINE_OF_CODE_RECEIVED   		0x37
-#define GWY_ACKNOWLEDGE_FINISHING_SENDING_CODE  		0x38
+#define MCU_WRITE_SUCCESS								0x38
+#define GW_ACKNOWLEDGE_FINISHING_SENDING_CODE  		    0x38
 #define MCU_ACKNOWLEDGE_FINISHING               		0x77
 #define MCU_ACKNOWLEDGE_ACTIVE_CODE_CORRECT     		0x78
 #define MCU_ACKNOWLEDGE_ACTIVE_CODE_NOT_CORRECT 		0x79
@@ -126,6 +127,7 @@
 #define SHIFT_16_BIT	16
 #define SHIFT_8_BIT		8
 #define SHIFT_0_BIT		0
+
 //*************************Define****************************//
 
 //*************************Structure****************************//
