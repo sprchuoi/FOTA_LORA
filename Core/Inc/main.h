@@ -50,8 +50,6 @@ extern SX1278_hw_t SX1278_hw;
 extern SX1278_t SX1278;
 
 extern uint8_t ret;
-extern uint8_t buffer_MISO[130];
-extern uint8_t buffer_MOSI[130];
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

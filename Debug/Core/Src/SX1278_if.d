@@ -24,7 +24,8 @@ Core/Src/SX1278_if.o: ../Core/Src/SX1278_if.c ../Core/Inc/SX1278_if.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_iwdg.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h \
- ../Core/Inc/SX1278.h
+ ../Core/Inc/operation.h ../Core/Inc/STD_TYPE.h ../Core/Inc/SX1278.h \
+ ../Core/Inc/BL_Program.h
 ../Core/Inc/SX1278_if.h:
 ../Core/Inc/SX1278.h:
 ../Core/Inc/SX1278_hw.h:
@@ -53,4 +54,7 @@ Core/Src/SX1278_if.o: ../Core/Src/SX1278_if.c ../Core/Inc/SX1278_if.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_iwdg.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h:
+../Core/Inc/operation.h:
+../Core/Inc/STD_TYPE.h:
 ../Core/Inc/SX1278.h:
+../Core/Inc/BL_Program.h:

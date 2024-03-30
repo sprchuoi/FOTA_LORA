@@ -1,2 +1,5 @@
-../Core/Src/SX1278_if.c:13:9:LORA_IF_GetData_Frame	24	static
-../Core/Src/SX1278_if.c:29:15:LORA_IF_Stransmit_Request	24	static
+../Core/Src/SX1278_if.c:13:16:LORA_IF_GetFragment_Firmware	24	static
+../Core/Src/SX1278_if.c:48:9:LORA_IF_GetData_Frame	24	static
+../Core/Src/SX1278_if.c:64:15:LORA_IF_Stransmit_Request	40	static
+../Core/Src/SX1278_if.c:88:15:LORA_IF_Stransmit_Response	48	static
+../Core/Src/SX1278_if.c:108:15:LORA_IF_Stransmit_Fragment_Firmware	40	static

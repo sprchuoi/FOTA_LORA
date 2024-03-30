@@ -10,6 +10,7 @@ C_SRCS += \
 ../Core/Src/SX1278_hw.c \
 ../Core/Src/SX1278_if.c \
 ../Core/Src/main.c \
+../Core/Src/operation.c \
 ../Core/Src/stm32f1xx_hal_msp.c \
 ../Core/Src/stm32f1xx_it.c \
 ../Core/Src/syscalls.c \
@@ -22,6 +23,7 @@ OBJS += \
 ./Core/Src/SX1278_hw.o \
 ./Core/Src/SX1278_if.o \
 ./Core/Src/main.o \
+./Core/Src/operation.o \
 ./Core/Src/stm32f1xx_hal_msp.o \
 ./Core/Src/stm32f1xx_it.o \
 ./Core/Src/syscalls.o \
@@ -34,6 +36,7 @@ C_DEPS += \
 ./Core/Src/SX1278_hw.d \
 ./Core/Src/SX1278_if.d \
 ./Core/Src/main.d \
+./Core/Src/operation.d \
 ./Core/Src/stm32f1xx_hal_msp.d \
 ./Core/Src/stm32f1xx_it.d \
 ./Core/Src/syscalls.d \
@@ -48,7 +51,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/BL_Program.cyclo ./Core/Src/BL_Program.d ./Core/Src/BL_Program.o ./Core/Src/BL_Program.su ./Core/Src/SX1278.cyclo ./Core/Src/SX1278.d ./Core/Src/SX1278.o ./Core/Src/SX1278.su ./Core/Src/SX1278_hw.cyclo ./Core/Src/SX1278_hw.d ./Core/Src/SX1278_hw.o ./Core/Src/SX1278_hw.su ./Core/Src/SX1278_if.cyclo ./Core/Src/SX1278_if.d ./Core/Src/SX1278_if.o ./Core/Src/SX1278_if.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32f1xx_hal_msp.cyclo ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.cyclo ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.cyclo ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su
+	-$(RM) ./Core/Src/BL_Program.cyclo ./Core/Src/BL_Program.d ./Core/Src/BL_Program.o ./Core/Src/BL_Program.su ./Core/Src/SX1278.cyclo ./Core/Src/SX1278.d ./Core/Src/SX1278.o ./Core/Src/SX1278.su ./Core/Src/SX1278_hw.cyclo ./Core/Src/SX1278_hw.d ./Core/Src/SX1278_hw.o ./Core/Src/SX1278_hw.su ./Core/Src/SX1278_if.cyclo ./Core/Src/SX1278_if.d ./Core/Src/SX1278_if.o ./Core/Src/SX1278_if.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/operation.cyclo ./Core/Src/operation.d ./Core/Src/operation.o ./Core/Src/operation.su ./Core/Src/stm32f1xx_hal_msp.cyclo ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.cyclo ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.cyclo ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su
 
 .PHONY: clean-Core-2f-Src
 

@@ -49,9 +49,8 @@ SX1278_hw_t SX1278_hw;
 SX1278_t SX1278;
 
 /* USER CODE BEGIN PV */
-uint8_t buffer_MISO[130] ;
-uint8_t buffer_MOSI[130] ;
 
+uint8_t chanel = 33;
 uint8_t ret ;
 
 /* USER CODE END PV */
@@ -111,7 +110,7 @@ int main(void)
   SX1278_hw.reset.pin = RESET_Pin;
   SX1278_hw.spi = &hspi1;
   SX1278.hw = &SX1278_hw;
-  SX1278_init(&SX1278, 434000000, SX1278_POWER_17DBM, SX1278_LORA_SF_7,
+  SX1278_init(&SX1278, SX1278_BASE_FREQUENCY_410MHZ+ chanel*FREQUENCY_1MHZ, SX1278_POWER_17DBM, SX1278_LORA_SF_7,
   SX1278_LORA_BW_500KHZ, SX1278_LORA_CR_4_8, SX1278_LORA_CRC_EN, 128);
 
   BL_voidBootLoader_Init();

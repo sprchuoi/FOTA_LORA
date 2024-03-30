@@ -13,8 +13,11 @@
 
 #include "SX1278_hw.h"
 
-#define SX1278_MAX_PACKET	256
-#define SX1278_DEFAULT_TIMEOUT		3000
+#define SX1278_MAX_PACKET						256
+#define SX1278_DEFAULT_TIMEOUT					3000
+#define SX1278_BASE_FREQUENCY_410MHZ 			410000000
+#define FREQUENCY_1MHZ 							1000000
+
 
 //RFM98 Internal registers Address
 /********************LoRa mode***************************/
@@ -86,6 +89,7 @@
 #define  RegPaRamp              0x0a
 #define  RegOcp                 0x0b
 #define  RegLna                 0x0c
+// LoRa registers
 #define  RegRxConfig            0x0d
 #define  RegRssiConfig      	0x0e
 #define  RegRssiCollision 		0x0f
@@ -135,12 +139,21 @@
 #define  RegLowBat              0x3d
 #define  RegIrqFlags1           0x3e
 #define  RegIrqFlags2           0x3f
+
+// I/O settings
 #define  RegDioMapping1			0x40
 #define  RegDioMapping2			0x41
+// Version
 #define  RegVersion				0x42
+// Additional settings
 #define  RegPllHop				0x44
 #define  RegPaDac				0x4d
 #define  RegBitRateFrac			0x5d
+#define  RegAgcThresh1			0x62
+#define  RegAgcThresh2			0x63
+#define  RegAgcThresh3			0x64
+#define  RegPll					0x70
+
 
 /**********************************************************
  **Parameter table define
@@ -203,10 +216,32 @@ static const uint8_t SX1278_LoRaBandwidth[10] = { 0, //   7.8KHz,
 #define SX1278_LORA_CR_4_8    3
 
 static const uint8_t SX1278_CodingRate[4] = { 0x01, 0x02, 0x03, 0x04 };
+// define Status Code for diagnostic
+#define ERR_NONE 0
+#define ERR_UNKNOWN -1
+#define ERR_CHIPNOTFOUND -2
+#define ERR_MEMORY_ALLOCATION_FAILED -3
+#define ERR_PACKET_TOO_LONG -4
+#define ERR_TX_TIMEOUT -5
+#define ERR_RX_TIMEOUT -6
+#define ERR_CRC_MISMATCH -7
+#define ERR_INVALID_BANDWIDTH -8
+#define ERR_INVALID_SPREADING_FACTOR -9
+#define ERR_INVALID_CODINGRATE -10
+#define ERR_BIT_RANGE -11
+#define ERR_INVALID_FREQUENCY -12
+#define ERR_INVALID_OUTPUT_POWER -13
+#define PREAMBLE_DEFECTED -14
+#define CHANEL_FREE -15
 
 //CRC Enable
 #define SX1278_LORA_CRC_EN              0
 #define SX1278_LORA_CRC_DIS             1
+
+
+extern uint8_t chanel; // Freq = 410Mhz + chanel*1Mhz -> 525Mhz : 115 chanel
+extern uint8_t ADDR_H; // 0x00 -> 0xFF :1 bytes
+extern uint8_t ADDR_L; // 0x00 -> 0xFF :1 bytes
 
 static const uint8_t SX1278_CRC_Sum[2] = { 0x01, 0x00 };
 

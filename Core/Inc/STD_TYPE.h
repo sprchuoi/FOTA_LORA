@@ -18,9 +18,4 @@ typedef signed short int          int6;
 typedef signed long int           int32;
 typedef signed long long int      int64;
 
-typedef enum {
-    false =0 ,
-    true =1
-} bool;
-
 #endif /* INC_STD_TYPE_H_ */

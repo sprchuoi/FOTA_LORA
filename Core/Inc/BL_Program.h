@@ -58,6 +58,7 @@
 #define FLAG_STATUS_SIZE_BACKUP_REGION_ADDRESS                   (0x0801FC38)
 #define FLAG_STATUS_CRC_BACKUP_REGION_ADDRESS                    (0x0801FC3C)
 #define FLAG_STATUS_ENTRY_POINT_VALUE_BACKUP_REGION_ADDRESS      (0x0801FC40)
+#define FLAG_STATUS_POS_LOSECONNECTION							 (0x0801FC44)
 
 // Branch Switch Constants
 #define BR_SHIFT_LEFT_24_BIT                        24
@@ -94,18 +95,19 @@
 #define BL_INITIALIZE_EITH_CORRUPTED                0xFFFFFFF3
 
 // Sequence flash code define
-#define GW_FLASH_COMMAND                				0x01
+#define GW_START_FLASHING                				0x01
 #define MCU_ENTER_FLASHMODE                         	0X02
+#define FL_FRAGMENT_FIRMWARE							0xFF
 #define GW_PROVIDE_HEADER								0x30
 #define MCU_RECEIVED_SIZE_CODE							0x31
 #define MCU_REQUEST_PACKET 								0x32
-#define MCU_ERASE_SECTOR                 				0x33
-#define MCU_WRITE_SECTOR         						0x34
+#define GW_START_SEND_FW								0x33
+#define MCU_RECEIVE_SUCCESS         				    0x34
 #define MCU_CHECK_SECTOR_FINISHING                  	0x35
 #define MCU_ACCEPT_RECEIVING_PACKET_OF_CODE     		0x36
 #define MCU_ACKNOWLEDGE_LINE_OF_CODE_RECEIVED   		0x37
 #define MCU_WRITE_SUCCESS								0x38
-#define GW_ACKNOWLEDGE_FINISHING_SENDING_CODE  		    0x38
+#define GW_ACKNOWLEDGE_FINISHING_SENDING_CODE  		    0x39
 #define MCU_ACKNOWLEDGE_FINISHING               		0x77
 #define MCU_ACKNOWLEDGE_ACTIVE_CODE_CORRECT     		0x78
 #define MCU_ACKNOWLEDGE_ACTIVE_CODE_NOT_CORRECT 		0x79
@@ -115,8 +117,10 @@
 
 //Node ID define
 #define ADDR_MASTER  0x123
-#define ADDR_NODE_1  0x001
-#define ADDR_NODE_2  0x002
+#define ADDR_NODE_1  0x01
+#define ADDR_NODE_2  0x02
+#define ADDR_BOARDCAST 0xFF
+#define ADDR_UNICAST 0x11
 
 
 #define HEADER_DATA_LENGTH 1
