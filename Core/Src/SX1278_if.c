@@ -11,37 +11,28 @@
 
 uint8_t counter ;
 LoRa_Return_t  LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer_packet ,uint8_t* buffer_flashing_data ,
-		uint8_t* buffer_resp ,uint8_t addr , uint8_t no ,uint8_t ACK_resp ){
+		uint8_t addr , uint8_t no){
 	counter = 0 ;
 	//clear data buffer
-	clearDataBuffer((uint8_t*) buffer_resp,8);
-	buffer_resp[0] = ADDR_UNICAST;
-	buffer_resp[1] = addr;
-	buffer_resp[2] = no;
-	buffer_resp[3] = ACK_resp;
+	//clearDataBuffer((uint8_t*) buffer_packet,132);
 	while(1){
 		/* Configuration LoRa to Receive firmware*/
-		ret = SX1278_LoRaEntryRx(module, DATA_LENGTH_FW, MAX_TIME_OUT);
-		HAL_Delay(100);
+		ret = SX1278_LoRaEntryRx(module, SIZE_BUFFER_132BYTES , MAX_TIME_OUT);
+		HAL_Delay(1000);
 		ret = SX1278_LoRaRxPacket(module);
 		if ( ret > 0 ) {
 			ret = SX1278_read(module, (uint8_t*) buffer_packet, ret);
-			if(buffer_packet[0] == ADDR_UNICAST  && buffer_packet[1] == ADDR_MASTER && buffer_packet[3] == FL_FRAGMENT_FIRMWARE){
-				no = buffer_packet[2];
+			if(buffer_packet[0] == ADDR_UNICAST  && buffer_packet[1] == addr  && buffer_packet[3] == FL_FRAGMENT_FIRMWARE){
+				no = buffer_packet[4];
 				/* Copy data from buffer packet to buffer flashing data*/
 				copy_Array_BL((uint8_t*) buffer_flashing_data ,(uint8_t*) buffer_packet, 128);
-				return FL_FRAGMENT_FIRMWARE ;
+				return LORA_OKE ;
 			}
 		}
 		else{
-			counter++;
-			/* counter to retry connect until get resp signal */
-			if(counter == 100){
-					return LORA_TIMEOUT;
+			return LORA_TIMEOUT;
 			}
 		}
-	}
-	return 0;
 }
 
 
@@ -51,8 +42,8 @@ uint8_t LORA_IF_GetData_Frame(SX1278_t *module , uint8_t* buffer , uint8_t ret ,
 	ret = SX1278_LoRaRxPacket(module);
 	if ( ret > 0 ) {
 		ret = SX1278_read(module, (uint8_t*) buffer, ret);
-		if(buffer[0] == ADDR_MASTER)
-			return buffer[1];
+		if(buffer[0]== ADDR_BOARDCAST  && buffer[1] == ADDR_NODE_1)
+			return buffer[3];
 	}
     return 0;
 }
@@ -63,17 +54,20 @@ uint8_t LORA_IF_GetData_Frame(SX1278_t *module , uint8_t* buffer , uint8_t ret ,
 //}
 LoRa_Return_t LORA_IF_Stransmit_Request(SX1278_t *module , uint8_t *buffer_req , uint8_t* buffer_resp ,
 		uint8_t ret, uint8_t addr ,uint8_t ACK_req , uint8_t ACK_resp){
-	uint8_t counter = 0;
-	buffer_req[0] = addr;
-	buffer_req[1] = ACK_req;
+	counter = 0;
+	buffer_req[0] = ADDR_UNICAST;
+	buffer_req[1] = addr ;
+	buffer_req[3] = ACK_req;
 	while(1){
-	 ret = SX1278_LoRaEntryTx(module, 16  , MAX_TIME_OUT);
-	 ret = SX1278_LoRaTxPacket(module, (uint8_t*) buffer_req, 16, MAX_TIME_OUT);
+	 ret = SX1278_LoRaEntryTx(module, SIZE_BUFFER_8BYTES  , MAX_TIME_OUT);
+	 ret = SX1278_LoRaTxPacket(module, (uint8_t*) buffer_req, SIZE_BUFFER_8BYTES, MAX_TIME_OUT);
 	 if(ret){
 		/*Read the first Frame
 		 *counter to retry connect until get resp signal
 		 */
-		if(LORA_IF_GetData_Frame(module ,(uint8_t*) buffer_resp , ret , MAX_TIME_OUT , 16 ) == ACK_resp){
+		 HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+		 HAL_Delay(TIME_DELAY);
+		if(LORA_IF_GetData_Frame(module ,(uint8_t*) buffer_resp , ret , MAX_TIME_OUT , SIZE_BUFFER_8BYTES ) == ACK_resp){
 			return LORA_OKE ;
 		}
 		else counter++;
@@ -89,7 +83,7 @@ LoRa_Return_t LORA_IF_Stransmit_Response(SX1278_t *module , uint8_t *buffer_req 
 		uint8_t ret, uint8_t addr ,uint8_t ACK_req , uint8_t ACK_resp){
 	uint8_t counter = 0;
 	while(1){
-		if((LORA_IF_GetData_Frame(module ,(uint8_t*) buffer_resp , ret , MAX_TIME_OUT , 16 ) == ACK_resp)){
+		if((LORA_IF_GetData_Frame(module ,(uint8_t*) buffer_resp , ret , MAX_TIME_OUT , SIZE_BUFFER_8BYTES ) == ACK_resp)){
 			return LORA_OKE;
 		}
 		else {
@@ -105,6 +99,23 @@ LoRa_Return_t LORA_IF_Stransmit_Response(SX1278_t *module , uint8_t *buffer_req 
 	}
 }
 
+LoRa_Return_t LORA_IF_Stransmit_Response_Flashing(SX1278_t *module ,uint8_t* buffer_resp ,
+		uint8_t no , uint8_t ret, uint8_t addr ,uint8_t ACK_resp){
+	buffer_resp[0] = ADDR_UNICAST;
+	buffer_resp[1] = addr;
+	buffer_resp[2] = no ;
+	buffer_resp[3] = ACK_resp;
+	ret = SX1278_LoRaEntryTx(module, SIZE_BUFFER_8BYTES  , MAX_TIME_OUT);
+	HAL_Delay(TIME_DELAY);
+	ret = SX1278_LoRaTxPacket(module, (uint8_t*) buffer_resp, SIZE_BUFFER_8BYTES, MAX_TIME_OUT);
+	if(ret){
+		// Toggle pin led to notify response
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+		HAL_Delay(TIME_DELAY);
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+	}
+}
+
 LoRa_Return_t LORA_IF_Stransmit_Fragment_Firmware(SX1278_t *module , uint8_t* buffer_packet ,uint8_t* buffer_flashing_data ,
 		uint8_t* buffer_resp ,uint8_t addr , uint8_t no , uint8_t ACK_resp ){
 	uint8_t counter = 0;
@@ -116,11 +127,11 @@ LoRa_Return_t LORA_IF_Stransmit_Fragment_Firmware(SX1278_t *module , uint8_t* bu
 	// Copy array buffer_data to buffer flashing
 	copy_Array_BL(buffer_packet , buffer_flashing_data, 128);
 	while(1){
-	 ret = SX1278_LoRaEntryTx(module, 132  , MAX_TIME_OUT);
-	 ret = SX1278_LoRaTxPacket(module, (uint8_t*) buffer_packet, 132, MAX_TIME_OUT);
+	 ret = SX1278_LoRaEntryTx(module, SIZE_BUFFER_132BYTES  , MAX_TIME_OUT);
+	 ret = SX1278_LoRaTxPacket(module, (uint8_t*) buffer_packet, SIZE_BUFFER_132BYTES, MAX_TIME_OUT);
 	 if(ret){
 		/*Read the first Frame */
-		if(LORA_IF_GetData_Frame(module ,(uint8_t*) buffer_resp , ret , MAX_TIME_OUT , 16 ) == ACK_resp){
+		if(LORA_IF_GetData_Frame(module ,(uint8_t*) buffer_resp , ret , MAX_TIME_OUT , SIZE_BUFFER_8BYTES ) == ACK_resp){
 			return LORA_OKE ;
 		}
 	 }

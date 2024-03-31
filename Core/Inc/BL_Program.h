@@ -58,7 +58,6 @@
 #define FLAG_STATUS_SIZE_BACKUP_REGION_ADDRESS                   (0x0801FC38)
 #define FLAG_STATUS_CRC_BACKUP_REGION_ADDRESS                    (0x0801FC3C)
 #define FLAG_STATUS_ENTRY_POINT_VALUE_BACKUP_REGION_ADDRESS      (0x0801FC40)
-#define FLAG_STATUS_POS_LOSECONNECTION							 (0x0801FC44)
 
 // Branch Switch Constants
 #define BR_SHIFT_LEFT_24_BIT                        24
@@ -97,7 +96,7 @@
 // Sequence flash code define
 #define GW_START_FLASHING                				0x01
 #define MCU_ENTER_FLASHMODE                         	0X02
-#define FL_FRAGMENT_FIRMWARE							0xFF
+#define FL_FRAGMENT_FIRMWARE							0xfe
 #define GW_PROVIDE_HEADER								0x30
 #define MCU_RECEIVED_SIZE_CODE							0x31
 #define MCU_REQUEST_PACKET 								0x32
@@ -116,11 +115,11 @@
 #define GW_ACKNOWLEDGE_FINISHING                        0x7C
 
 //Node ID define
-#define ADDR_MASTER  0x123
+#define ADDR_MASTER  0x23
 #define ADDR_NODE_1  0x01
 #define ADDR_NODE_2  0x02
 #define ADDR_BOARDCAST 0xFF
-#define ADDR_UNICAST 0x11
+#define ADDR_UNICAST 0x03
 
 
 #define HEADER_DATA_LENGTH 1

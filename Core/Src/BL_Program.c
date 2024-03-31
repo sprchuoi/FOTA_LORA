@@ -26,6 +26,8 @@ uint8_t buffer_req[8];
 uint8_t buffer_flashing_data[128];
 uint8_t buffer_packet[132];
 uint8_t buffer_resp[8];
+uint32_t Local_u32SizeOfCode;
+uint8_t  Local_u8index_fragment;
 //**************************Include***************************//
 uint32_t BL_u32ReadAddressData(uint32_t address){
 	uint32_t Local_u32AddressData = *((volatile uint32_t*)(address));
@@ -34,6 +36,7 @@ uint32_t BL_u32ReadAddressData(uint32_t address){
 //**************************Function Define***************************//
 void BL_voidBootLoader_Init(void)
 {
+	BL_voidEraseRestoreHeaderPage(FLAG_STATUS_BOOTLOADER,BL_BRANCHING_FLAG_SET);
 	// Read Branching Request Update Flag.
 	uint32_t Local_u32Flag = BL_u32ReadAddressData(FLAG_STATUS_BOOTLOADER);
 	if(Local_u32Flag == BL_BRANCHING_FLAG_RESET)
@@ -66,8 +69,8 @@ void BL_voidCheckActiveRegion(void)
 	}
     else if(Local_u32ActiveImageStatus == BR_IMAGE_IS_CORRUPTED || Local_u32ActiveImageStatus == BR_IMAGE_IS_NOT_EXISTING)
 	{
-		// Check the status of the backup image if the image in he active region is corrupted or not exisit.
     	Local_u32BackupStatus    = BL_32CheckBackupRegion();
+		// Check the status of the backup image if the image in he active region is corrupted or not exisit.
 		if(Local_u32BackupStatus == BR_IMAGE_IS_CORRECT)
 		{
 			// Move the backup image to the active region to be executed.
@@ -257,19 +260,21 @@ void BL_voidUpdateHeaders(void)
 	Local_u32ActiveRegionStatus = BL_u32ReadAddressData(FLAG_STATUS_ACTIVE_REGION_ADDRESS);
 	//Structure LoRa Transmit
 	// Request LoRa stransmit to get size of code
-	LORA_IF_Stransmit_Request(&SX1278,(uint8_t*)  buffer_req,(uint8_t*)  buffer_resp, ret, ADDR_NODE_1, MCU_ENTER_FLASHMODE, GW_PROVIDE_HEADER);
-	/*Response Goto Programming and Send Update Request */
-	/*Get the size code */
-	Local_u32ImageSizeInBytes = (buffer_resp[7] << SHIFT_24_BIT) | (buffer_resp[6] << SHIFT_16_BIT) | 		\
-								(buffer_resp[5] << SHIFT_8_BIT) | (buffer_resp[4] << SHIFT_0_BIT);
+	if(LORA_IF_Stransmit_Request(&SX1278,(uint8_t*)  buffer_req,(uint8_t*)  buffer_resp, ret, ADDR_NODE_1, MCU_ENTER_FLASHMODE, GW_PROVIDE_HEADER) == LORA_OKE){
 
-	if(Local_u32ActiveRegionStatus == BR_IMAGE_IS_ACTIVE )
-	{
-		BL_voidCopyImageToBackupRegion();
+		/*Response Goto Programming and Send Update Request */
+		/*Get the size code */
+		Local_u32ImageSizeInBytes = (buffer_resp[7] << SHIFT_24_BIT) | (buffer_resp[6] << SHIFT_16_BIT) |
+									(buffer_resp[5] << SHIFT_8_BIT) | (buffer_resp[4] << SHIFT_0_BIT);
+		if(Local_u32ActiveRegionStatus == BR_IMAGE_IS_ACTIVE )
+		{
+			BL_voidCopyImageToBackupRegion();
+		}
+		//set IMG Corrupted - if flashing success update img correct
+		BL_voidEraseRestoreHeaderPage(FLAG_STATUS_ACTIVE_REGION_ADDRESS,BR_SET_IMAGE_CORRUPTED);
+		BL_voidEraseRestoreHeaderPage(FLAG_STATUS_SIZE_ACTIVE_REGION_ADDRESS,Local_u32ImageSizeInBytes);
 	}
-	//set IMG Corrupted - if flashing success update img correct
-	BL_voidEraseRestoreHeaderPage(FLAG_STATUS_ACTIVE_REGION_ADDRESS,BR_SET_IMAGE_CORRUPTED);
-	BL_voidEraseRestoreHeaderPage(FLAG_STATUS_SIZE_ACTIVE_REGION_ADDRESS,Local_u32ImageSizeInBytes);
+
 }
 
 void BL_voidReceiveUpdate(void)
@@ -277,11 +282,12 @@ void BL_voidReceiveUpdate(void)
 	uint32_t Local_u32HighByteDataReceive  						  = BL_INITIALIZE_WITH_ZERO;
 	uint32_t Local_u32LowByteDataReceive  						  = BL_INITIALIZE_WITH_ZERO;
 	uint32_t Local_u32InactiveImageAddressCounter                 = ACTIVE_IMAGE_START_ADDRESS;
-	uint32_t Local_u32SizeOfCode 								  = BL_u32ReadAddressData(FLAG_STATUS_SIZE_ACTIVE_REGION_ADDRESS);
-	uint8_t  Local_u8index_fragment							  	  = BL_INITIALIZE_WITH_ZERO;
-	uint8_t  Local_u8index_fragment_previous								  = BL_INITIALIZE_WITH_ZERO;
-	FLASH_EraseInitTypeDef Local_eraseInfo;
 	uint32_t Local_u32PageError;
+
+    Local_u32SizeOfCode 								  		 = BL_u32ReadAddressData(FLAG_STATUS_SIZE_ACTIVE_REGION_ADDRESS);
+	Local_u8index_fragment							  	         = BL_INITIALIZE_WITH_ZERO;
+	uint8_t  Local_u8index_fragment_previous					  = BL_INITIALIZE_WITH_ZERO;
+	FLASH_EraseInitTypeDef Local_eraseInfo;
 	// Erase the Active region.
 	Local_eraseInfo.TypeErase = FLASH_TYPEERASE_PAGES;
 	Local_eraseInfo.Banks = FLASH_BANK_1;
@@ -291,24 +297,33 @@ void BL_voidReceiveUpdate(void)
 	HAL_FLASH_Unlock(); //Unlocks the flash memory
 	HAL_FLASHEx_Erase(&Local_eraseInfo, &Local_u32PageError); //Deletes given sectors
 	HAL_FLASH_Lock();  //Locks again the flash memory
+
 	//Structure CAN Transmit
-	LORA_IF_Stransmit_Request(&SX1278,(uint8_t*)  buffer_req,(uint8_t*)  buffer_resp, ret, ADDR_NODE_1, MCU_RECEIVED_SIZE_CODE, GW_START_SEND_FW);
-	//init flash get the first frame 0
-	if(LORA_IF_GetFragment_Firmware(&SX1278,(uint8_t*) buffer_packet,(uint8_t*) buffer_flashing_data,(uint8_t*) buffer_resp,
-			ADDR_NODE_1, Local_u8index_fragment, MCU_RECEIVE_SUCCESS)== LORA_TIMEOUT){
-		return;
-	}
+	// Sent Request send fw
+	LORA_IF_Stransmit_Response_Flashing(&SX1278, (uint8_t*)buffer_resp,
+			Local_u8index_fragment , ret, ADDR_NODE_1, MCU_RECEIVED_SIZE_CODE);
+
+
 	//Loop to receive code update
 	while(Local_u32SizeOfCode)
 	{
 		//Receive code update Fragment firmware
-		if (Local_u32SizeOfCode > 128){
+		if (LORA_IF_GetFragment_Firmware(&SX1278,(uint8_t*) buffer_packet,(uint8_t*) buffer_flashing_data,
+				ADDR_NODE_1, Local_u8index_fragment) == LORA_TIMEOUT){
+//			// request Send FW again !!
+			if(Local_u8index_fragment == 0 ){
+				LORA_IF_Stransmit_Response_Flashing(&SX1278, (uint8_t*)buffer_resp,
+						Local_u8index_fragment , ret, ADDR_NODE_1, MCU_RECEIVED_SIZE_CODE);
+			}
+		}
+
+		if (Local_u32SizeOfCode > 128 && Local_u8index_fragment > Local_u8index_fragment_previous){
 			for(uint8_t i = 0 ; i < 16 ; i++){
 				uint8_t bit_shift = (7*i+1);
-				Local_u32HighByteDataReceive = (buffer_flashing_data[8+bit_shift] << SHIFT_24_BIT) | (buffer_flashing_data[7+bit_shift] << SHIFT_16_BIT)
-											| (buffer_flashing_data[6+ bit_shift] << SHIFT_8_BIT) | (buffer_flashing_data[5+bit_shift] << SHIFT_0_BIT) ;
-			    Local_u32LowByteDataReceive  = (buffer_flashing_data[4 + bit_shift] << SHIFT_24_BIT) | (buffer_flashing_data[3 + bit_shift] << SHIFT_16_BIT)
-											| (buffer_flashing_data[2 + bit_shift] << SHIFT_8_BIT) | (buffer_flashing_data[1+bit_shift] << SHIFT_0_BIT) ;
+				Local_u32HighByteDataReceive = (buffer_flashing_data[7+bit_shift] << SHIFT_24_BIT) | (buffer_flashing_data[6+bit_shift] << SHIFT_16_BIT)
+											| (buffer_flashing_data[5+ bit_shift] << SHIFT_8_BIT) | (buffer_flashing_data[4+bit_shift] << SHIFT_0_BIT) ;
+			    Local_u32LowByteDataReceive  = (buffer_flashing_data[3 + bit_shift] << SHIFT_24_BIT) | (buffer_flashing_data[2 + bit_shift] << SHIFT_16_BIT)
+											| (buffer_flashing_data[1 + bit_shift] << SHIFT_8_BIT) | (buffer_flashing_data[0+bit_shift] << SHIFT_0_BIT) ;
 
 				HAL_FLASH_Unlock(); //Unlocks the flash memory
 				HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Local_u32InactiveImageAddressCounter, Local_u32LowByteDataReceive);
@@ -316,9 +331,13 @@ void BL_voidReceiveUpdate(void)
 				HAL_FLASH_Lock();  //Locks again the flash memory
 				Local_u32InactiveImageAddressCounter += 8;
 				Local_u32SizeOfCode -= 8;
+
 			}
+			Local_u8index_fragment_previous = Local_u8index_fragment;
+			LORA_IF_Stransmit_Response_Flashing(&SX1278, (uint8_t*) buffer_resp,
+							Local_u8index_fragment_previous , ret, ADDR_NODE_1, MCU_WRITE_SUCCESS);
 		}
-		else{
+		else if(Local_u8index_fragment > Local_u8index_fragment_previous){
 			for(uint8_t i = 0 ; i < 16 ; i++){
 				uint8_t bit_shift = (7*i+1);
 				Local_u32HighByteDataReceive = (buffer_flashing_data[8+bit_shift] << SHIFT_24_BIT) | (buffer_flashing_data[6+bit_shift] << SHIFT_16_BIT)
@@ -333,18 +352,20 @@ void BL_voidReceiveUpdate(void)
 			HAL_FLASH_Lock();  //Locks again the flash memory
 
 			Local_u32SizeOfCode -= Local_u32SizeOfCode ;
+			LORA_IF_Stransmit_Response_Flashing(&SX1278, (uint8_t*) buffer_resp,
+							Local_u8index_fragment_previous , ret, ADDR_NODE_1, MCU_WRITE_SUCCESS);
+
 		}
+
+
 		/* Send To notify GW Send the next packet*/
-		if (LORA_IF_GetFragment_Firmware(&SX1278,(uint8_t*) buffer_packet,(uint8_t*) buffer_flashing_data,(uint8_t*) buffer_resp,
-				ADDR_NODE_1, Local_u8index_fragment_previous , MCU_WRITE_SUCCESS) == LORA_TIMEOUT){
-			BL_voidEraseRestoreHeaderPage(FLAG_STATUS_POS_LOSECONNECTION , Local_u8index_fragment_previous);
-			return;
-		}
 
 	}
 	// MCU send response when finish flashing
-	LORA_IF_Stransmit_Response(&SX1278,(uint8_t*)  buffer_req,(uint8_t*)  buffer_resp, ret, ADDR_NODE_1, GW_ACKNOWLEDGE_FINISHING_SENDING_CODE, MCU_ACKNOWLEDGE_FINISHING);
-	BL_voidFinishBootLoader();
+	if (LORA_IF_Stransmit_Response(&SX1278,(uint8_t*)  buffer_req,(uint8_t*)  buffer_resp, ret,
+			ADDR_NODE_1, GW_ACKNOWLEDGE_FINISHING_SENDING_CODE, MCU_ACKNOWLEDGE_FINISHING) == LORA_OKE){
+			BL_voidFinishBootLoader();
+	}
 }
 
 void BL_voidFinishBootLoader(void)
