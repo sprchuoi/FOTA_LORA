@@ -9,6 +9,6 @@
 ../Core/Src/BL_Program.c:209:6:BL_voidEraseRestoreHeaderPage	224	static
 ../Core/Src/BL_Program.c:247:6:BL_voidSetBranchingFlagAndMakeSWR	8	static
 ../Core/Src/BL_Program.c:255:6:BL_voidUpdateHeaders	32	static
-../Core/Src/BL_Program.c:280:6:BL_voidReceiveUpdate	96	static
-../Core/Src/BL_Program.c:371:6:BL_voidFinishBootLoader	8	static
-../Core/Src/BL_Program.c:378:6:BL_voidMakeSoftWareReset	8	static
+../Core/Src/BL_Program.c:280:6:BL_voidReceiveUpdate	88	static
+../Core/Src/BL_Program.c:387:6:BL_voidFinishBootLoader	8	static
+../Core/Src/BL_Program.c:394:6:BL_voidMakeSoftWareReset	8	static

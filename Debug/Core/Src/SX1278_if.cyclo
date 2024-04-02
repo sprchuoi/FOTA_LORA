@@ -1,6 +1,8 @@
-../Core/Src/SX1278_if.c:13:16:LORA_IF_GetFragment_Firmware	5
-../Core/Src/SX1278_if.c:39:9:LORA_IF_GetData_Frame	4
-../Core/Src/SX1278_if.c:55:15:LORA_IF_Stransmit_Request	3
-../Core/Src/SX1278_if.c:82:15:LORA_IF_Stransmit_Response	2
-../Core/Src/SX1278_if.c:102:15:LORA_IF_Stransmit_Response_Flashing	2
-../Core/Src/SX1278_if.c:119:15:LORA_IF_Stransmit_Fragment_Firmware	3
+../Core/Src/SX1278_if.c:13:10:LORA_IF_GetFragment_Firmware	5
+../Core/Src/SX1278_if.c:41:9:LORA_IF_GetData_Frame	4
+../Core/Src/SX1278_if.c:58:15:LORA_IF_Stransmit_Request	4
+../Core/Src/SX1278_if.c:86:15:LORA_IF_Stransmit_Request_Finish	3
+../Core/Src/SX1278_if.c:108:15:LORA_IF_Stransmit_Response	4
+../Core/Src/SX1278_if.c:128:15:LORA_IF_Stransmit_Response_Finish	2
+../Core/Src/SX1278_if.c:140:15:LORA_IF_Stransmit_Response_Flashing	2
+../Core/Src/SX1278_if.c:156:15:LORA_IF_Stransmit_Fragment_Firmware	4

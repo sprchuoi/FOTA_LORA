@@ -25,7 +25,7 @@
 #include "main.h"
 #include "operation.h"
 #define NULL_DATA 			0
-#define MAX_TRY_REQ 		1000
+#define MAX_TRY_REQ 		10
 #define MAX_TIME_OUT		2000
 #define DATA_LENGTH_FW 		128
 #define TIME_DELAY 			1000
@@ -51,13 +51,18 @@ extern uint8_t ret;
 extern uint8_t counter;
 LoRa_Return_t LORA_IF_Stransmit_Request(SX1278_t *module , uint8_t* buffer_req,uint8_t* buffer_resp ,
 		uint8_t ret , uint8_t addr ,uint8_t ACK_req , uint8_t ACK_resp);
+LoRa_Return_t LORA_IF_Stransmit_Request_Finish(SX1278_t *module , uint8_t *buffer_req , uint8_t* buffer_resp ,
+		uint8_t ret, uint8_t addr ,uint8_t ACK_req , uint8_t ACK_resp);
 LoRa_Return_t LORA_IF_Stransmit_Fragment_Firmware(SX1278_t *module , uint8_t* buffer_packet ,uint8_t* buffer_flashing_data,
 		uint8_t* buffer_resp, uint8_t addr ,uint8_t no , uint8_t ACK_resp);
 uint8_t LORA_IF_GetData_Frame(SX1278_t *module , uint8_t* buffer , uint8_t ret , uint32_t timeout , uint8_t length );
 LoRa_Return_t LORA_IF_Stransmit_Data_Frame(SX1278_t *module, uint8_t *txBuffer, uint8_t length, uint32_t timeout);
 LoRa_Return_t LORA_IF_Stransmit_Response(SX1278_t *module , uint8_t *buffer_req , uint8_t* buffer_resp ,
 		uint8_t ret, uint8_t addr ,uint8_t ACK_req , uint8_t ACK_resp);
-LoRa_Return_t  LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer_packet ,uint8_t* buffer_flashing_data,uint8_t addr , uint8_t no);
+LoRa_Return_t LORA_IF_Stransmit_Response_Finish(SX1278_t *module , uint8_t* buffer_resp ,
+		uint8_t ret, uint8_t addr ,uint8_t ACK_req);
+uint8_t  LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer_packet ,uint8_t* buffer_flashing_data,
+		uint8_t addr);
 LoRa_Return_t LORA_IF_Stransmit_Response_Flashing(SX1278_t *module ,uint8_t* buffer_resp ,
 		uint8_t no, uint8_t ret, uint8_t addr ,uint8_t ACK_resp);
 #endif /*__SX1278_IF_H__*/
