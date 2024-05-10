@@ -1,0 +1,4 @@
+../Core/Src/GW_Config.c:16:10:GW_Config_GetParameter	1
+../Core/Src/GW_Config.c:21:6:GW_voidEraseRestoreConfigPage	4
+../Core/Src/GW_Config.c:60:6:GW_Config_Init	1
+../Core/Src/GW_Config.c:64:6:GW_Config_SetUp	2

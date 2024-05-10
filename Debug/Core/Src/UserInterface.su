@@ -1,0 +1,14 @@
+../Core/Src/UserInterface.c:29:6:UI_Init	8	static
+../Core/Src/UserInterface.c:43:6:UI_Main_FLASHING	24	static
+../Core/Src/UserInterface.c:210:13:UI_Init_Flashing_Screen	8	static
+../Core/Src/UserInterface.c:218:13:UI_Clean	8	static
+../Core/Src/UserInterface.c:223:13:UI_WaitForResp	24	static
+../Core/Src/UserInterface.c:246:13:UI_Downloading_FW	8	static
+../Core/Src/UserInterface.c:258:13:UI_UpdateDownloading_FW	24	static
+../Core/Src/UserInterface.c:267:13:UI_DoneDownload_FW	16	static
+../Core/Src/UserInterface.c:283:13:UI_Synconfiguaraton	8	static
+../Core/Src/UserInterface.c:289:13:UI_SendSW_LoRa	24	static
+../Core/Src/UserInterface.c:301:13:UI_StartOTA	8	static
+../Core/Src/UserInterface.c:306:13:UI_Wait_ACCEPT_OTA	24	static
+../Core/Src/UserInterface.c:316:13:UI_DisplayERROR	24	static
+../Core/Src/UserInterface.c:339:13:UI_Send_Packet_Lost	24	static

@@ -1,0 +1,2 @@
+../Core/Src/Encrypt_if.c:23:6:Encrypt_Address_Read_Init	4	static
+../Core/Src/Encrypt_if.c:27:6:Encrypt_MainFunc	16	static

@@ -1,0 +1,15 @@
+../Core/Src/Flashing_LoRa.c:38:13:FL_Syns_Config	48	static
+../Core/Src/Flashing_LoRa.c:58:13:Flashing_init	40	static
+../Core/Src/Flashing_LoRa.c:80:13:Sequence_Process	16	static
+../Core/Src/Flashing_LoRa.c:87:9:Flashing_end	32	static
+../Core/Src/Flashing_LoRa.c:111:9:Flashing_Request	24	static
+../Core/Src/Flashing_LoRa.c:130:9:Wait_Accept_OTA	24	static
+../Core/Src/Flashing_LoRa.c:158:9:Send_Finish_OTA	32	static
+../Core/Src/Flashing_LoRa.c:184:10:FL_u32ReadAddressData	24	static
+../Core/Src/Flashing_LoRa.c:189:10:FL_CalculateCRCFWLoRa	32	static
+../Core/Src/Flashing_LoRa.c:223:6:Send_Start_OTA	16	static
+../Core/Src/Flashing_LoRa.c:233:6:Wait_Start_OTA	16	static
+../Core/Src/Flashing_LoRa.c:255:6:FL_FlashLoRa_INIT	16	static
+../Core/Src/Flashing_LoRa.c:305:10:FL_getPacketlost	24	static
+../Core/Src/Flashing_LoRa.c:310:6:FL_PacketLoRaSend_START	24	static
+../Core/Src/Flashing_LoRa.c:388:6:FL_PacketLoRaDone_OTA	16	static

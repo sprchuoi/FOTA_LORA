@@ -1,0 +1,14 @@
+../Core/Src/UserInterface.c:29:6:UI_Init	1
+../Core/Src/UserInterface.c:43:6:UI_Main_FLASHING	32
+../Core/Src/UserInterface.c:210:13:UI_Init_Flashing_Screen	1
+../Core/Src/UserInterface.c:218:13:UI_Clean	1
+../Core/Src/UserInterface.c:223:13:UI_WaitForResp	1
+../Core/Src/UserInterface.c:246:13:UI_Downloading_FW	1
+../Core/Src/UserInterface.c:258:13:UI_UpdateDownloading_FW	1
+../Core/Src/UserInterface.c:267:13:UI_DoneDownload_FW	1
+../Core/Src/UserInterface.c:283:13:UI_Synconfiguaraton	1
+../Core/Src/UserInterface.c:289:13:UI_SendSW_LoRa	1
+../Core/Src/UserInterface.c:301:13:UI_StartOTA	1
+../Core/Src/UserInterface.c:306:13:UI_Wait_ACCEPT_OTA	1
+../Core/Src/UserInterface.c:316:13:UI_DisplayERROR	5
+../Core/Src/UserInterface.c:339:13:UI_Send_Packet_Lost	1

@@ -1,0 +1,6 @@
+../Core/Src/operation.c:10:6:copy_Array	2
+../Core/Src/operation.c:17:6:copy_Array_BL	2
+../Core/Src/operation.c:25:20:clearDataBuffer	1
+../Core/Src/operation.c:32:6:ConvertUInt32ToHexString	1
+../Core/Src/operation.c:38:8:ConvertArr32ToUint32	1
+../Core/Src/operation.c:47:6:getSizePacket	1
