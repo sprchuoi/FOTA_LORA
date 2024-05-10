@@ -1,8 +1,6 @@
-../Core/Src/SX1278_if.c:13:10:LORA_IF_GetFragment_Firmware	24	static
-../Core/Src/SX1278_if.c:41:9:LORA_IF_GetData_Frame	24	static
-../Core/Src/SX1278_if.c:58:15:LORA_IF_Stransmit_Request	32	static
-../Core/Src/SX1278_if.c:86:15:LORA_IF_Stransmit_Request_Finish	32	static
-../Core/Src/SX1278_if.c:108:15:LORA_IF_Stransmit_Response	48	static
-../Core/Src/SX1278_if.c:128:15:LORA_IF_Stransmit_Response_Finish	32	static
-../Core/Src/SX1278_if.c:140:15:LORA_IF_Stransmit_Response_Flashing	24	static
-../Core/Src/SX1278_if.c:156:15:LORA_IF_Stransmit_Fragment_Firmware	40	static
+../Core/Src/SX1278_if.c:15:11:LORA_IF_GetFragment_Firmware	32	static
+../Core/Src/SX1278_if.c:52:9:LORA_IF_TransferData_Frame	24	static
+../Core/Src/SX1278_if.c:70:15:LORA_IF_Stransmit_Request	24	static
+../Core/Src/SX1278_if.c:90:15:LORA_IF_Stransmit_Response_Flashing	24	static
+../Core/Src/SX1278_if.c:110:15:LORA_IF_Stransmit_Fragment_Firmware	40	static
+../Core/Src/SX1278_if.c:137:15:LORA_IF_Stransmit_Response	24	static

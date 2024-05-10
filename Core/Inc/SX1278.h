@@ -188,13 +188,13 @@ static const uint8_t SX1278_SpreadFactor[7] = { 6, 7, 8, 9, 10, 11, 12 };
 #define	SX1278_LORA_BW_41_7KHZ		5
 #define	SX1278_LORA_BW_62_5KHZ		6
 #define	SX1278_LORA_BW_125KHZ		7
-#define	SX1278_LORA_BW_250KHZ		8
 #define	SX1278_LORA_BW_500KHZ		9
+#define	SX1278_LORA_BW_250KHZ		8
 
 #define SX1278_LORA_ISM_434MHZ       434000000
 #define SX1278_LORA_ISM_525MHZ       525000000
-
-
+#define SX1278_LORA_410MHZ  		 410000000
+#define SX1278_LORA_1MHZ  		 	 1000000
 #define MASTER 1
 #define SLAVE 0
 static const uint8_t SX1278_LoRaBandwidth[10] = { 0, //   7.8KHz,
@@ -249,6 +249,8 @@ typedef enum _SX1278_STATUS {
 	SLEEP, STANDBY, TX, RX
 } SX1278_Status_t;
 
+
+#pragma pack(1)
 typedef struct {
 	SX1278_hw_t *hw;
 

@@ -164,8 +164,8 @@ int SX1278_LoRaEntryRx(SX1278_t *module, uint8_t length, uint32_t timeout) {
 	}
 }
 
-uint8_t SX1278_LoRaRxPacket(SX1278_t *module) {
 	unsigned char addr;
+uint8_t SX1278_LoRaRxPacket(SX1278_t *module) {
 	unsigned char packet_size;
 
 	if (SX1278_hw_GetDIO0(module->hw)) {

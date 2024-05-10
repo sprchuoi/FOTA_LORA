@@ -17,12 +17,11 @@ typedef enum{
 	EXCEPTION =-1
 }Return_Operation_t;
 // Copy Array
-#if defined(GW_CONFIG) && GW_CONFIG
-	void copy_Array(uint8* a , uint8* b , uint32 size);
-#elif defined(BL_CONFIG) && BL_CONFIG
-	void copy_Array_BL(uint8* a , uint8* b , uint32 size);
-#endif
+void copy_Array(uint8* a , uint8* b , uint32 size);
+void copy_Array_BL(uint8* a , uint8* b , uint32 size);
 Return_Operation_t clearDataBuffer(uint8 *buffer , uint32 buffer_size);
 
 void ConvertUInt32ToHexString(char* hexString);
+
+uint32 ConvertArr32ToUint32(uint8 * buffer);
 #endif /* INC_OPERATION_H_ */

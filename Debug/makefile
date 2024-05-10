@@ -52,6 +52,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 BootLoader_f103c8t6.list \
 
+OBJCOPY_HEX += \
+BootLoader_f103c8t6.hex \
+
+OBJCOPY_BIN += \
+BootLoader_f103c8t6.bin \
+
 
 # All Target
 all: main-build
@@ -75,12 +81,22 @@ BootLoader_f103c8t6.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_D
 	@echo 'Finished building: $@'
 	@echo ' '
 
+BootLoader_f103c8t6.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "BootLoader_f103c8t6.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+BootLoader_f103c8t6.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "BootLoader_f103c8t6.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) BootLoader_f103c8t6.elf BootLoader_f103c8t6.list BootLoader_f103c8t6.map default.size.stdout
+	-$(RM) BootLoader_f103c8t6.bin BootLoader_f103c8t6.elf BootLoader_f103c8t6.hex BootLoader_f103c8t6.list BootLoader_f103c8t6.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

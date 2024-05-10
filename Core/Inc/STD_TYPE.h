@@ -18,4 +18,13 @@ typedef signed short int          int6;
 typedef signed long int           int32;
 typedef signed long long int      int64;
 
+#define SHIFT_0_BIT				0U
+#define SHIFT_8_BIT				8U
+#define SHIFT_16_BIT			16U
+#define SHIFT_24_BIT			24U
+#define SHIFT_32_BIT 			32U
+#define SHIFT_40_BIT			40U
+#define SHIFT_48_BIT			48U
+#define SHIFT_56_BIT 			56U
+
 #endif /* INC_STD_TYPE_H_ */

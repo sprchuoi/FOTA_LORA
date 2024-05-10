@@ -2,3 +2,4 @@
 ../Core/Src/operation.c:17:6:copy_Array_BL	32	static
 ../Core/Src/operation.c:24:20:clearDataBuffer	16	static
 ../Core/Src/operation.c:31:6:ConvertUInt32ToHexString	24	static
+../Core/Src/operation.c:38:8:ConvertArr32ToUint32	24	static
