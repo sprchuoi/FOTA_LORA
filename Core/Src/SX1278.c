@@ -281,7 +281,7 @@ uint8_t SX1278_read(SX1278_t *module, uint8_t *rxBuf, uint8_t length) {
 uint8_t SX1278_RSSI_LoRa(SX1278_t *module) {
 	uint32_t temp = 10;
 	temp = SX1278_SPIRead(module, LR_RegRssiValue); //Read RegRssiValue, Rssi value
-	temp = temp + 127 - 137; //127:Max RSSI, 137:RSSI offset
+	//temp = temp + 127 - 137; //127:Max RSSI, 137:RSSI offset
 	return (uint8_t) temp;
 }
 
@@ -292,3 +292,8 @@ uint8_t SX1278_RSSI(SX1278_t *module) {
 	return temp;
 }
 
+uint8_t SX1278_SNR(SX1278_t *module){
+	uint32_t temp = 0xff;
+	temp = SX1278_SPIRead(module, LR_RegPktSnrValue);
+	return temp;
+}

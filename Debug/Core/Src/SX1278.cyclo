@@ -18,3 +18,4 @@
 ../Core/Src/SX1278.c:272:9:SX1278_read	2
 ../Core/Src/SX1278.c:281:9:SX1278_RSSI_LoRa	1
 ../Core/Src/SX1278.c:288:9:SX1278_RSSI	1
+../Core/Src/SX1278.c:295:9:SX1278_SNR	1

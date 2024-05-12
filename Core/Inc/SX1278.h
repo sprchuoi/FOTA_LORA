@@ -522,5 +522,13 @@ void SX1278_standby(SX1278_t *module);
  * \param[in]  module	Pointer to LoRa structure
  */
 void SX1278_sleep(SX1278_t *module);
+/**
+ * \brief Estimate SNR
+ *
+ * Estimate SNR.
+ *
+ * \param[in]  module	Estimate SNR
+ */
 
+uint8_t SX1278_SNR(SX1278_t *module);
 #endif
