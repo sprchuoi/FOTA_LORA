@@ -41,9 +41,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_macro  0001bc52  00000000  00000000  000488e4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_line   0001912a  00000000  00000000  00064536  2**0
+ 19 .debug_line   00019128  00000000  00000000  00064536  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_str    00091c48  00000000  00000000  0007d660  2**0
+ 20 .debug_str    00091c48  00000000  00000000  0007d65e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  21 .debug_frame  00004ebc  00000000  00000000  0010f2a8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -2184,11 +2184,11 @@ void FL_PacketLoRaSend_START(void){
  8001228:	f64f 72ff 	movw	r2, #65535	; 0xffff
  800122c:	4293      	cmp	r3, r2
  800122e:	d105      	bne.n	800123c <FL_PacketLoRaSend_START+0x8c>
-					gl_u8backup_flag = 0;
+			gl_u8backup_flag = 0;
  8001230:	4b49      	ldr	r3, [pc, #292]	; (8001358 <FL_PacketLoRaSend_START+0x1a8>)
  8001232:	2200      	movs	r2, #0
  8001234:	701a      	strb	r2, [r3, #0]
-					gl_u16No_Packet_Flash = 0;
+			gl_u16No_Packet_Flash = 0;
  8001236:	4b47      	ldr	r3, [pc, #284]	; (8001354 <FL_PacketLoRaSend_START+0x1a4>)
  8001238:	2200      	movs	r2, #0
  800123a:	801a      	strh	r2, [r3, #0]
@@ -2617,11 +2617,11 @@ void GW_Config_SetUp(void){
  8001536:	b082      	sub	sp, #8
  8001538:	af00      	add	r7, sp, #0
 	uint32_t GW_u32LocalStatus_GW_Config = GW_Config_GetParameter(FLAG_STATUS_GW_CONFIG);
- 800153a:	4811      	ldr	r0, [pc, #68]	; (8001580 <GW_Config_SetUp+0x4c>)
+ 800153a:	4810      	ldr	r0, [pc, #64]	; (800157c <GW_Config_SetUp+0x48>)
  800153c:	f7ff ff3a 	bl	80013b4 <GW_Config_GetParameter>
  8001540:	6078      	str	r0, [r7, #4]
 	uint32_t GW_u32LocalParameter= GW_Config_GetParameter(FLAG_PARAMETER_GW_CONFIG);
- 8001542:	4810      	ldr	r0, [pc, #64]	; (8001584 <GW_Config_SetUp+0x50>)
+ 8001542:	480f      	ldr	r0, [pc, #60]	; (8001580 <GW_Config_SetUp+0x4c>)
  8001544:	f7ff ff36 	bl	80013b4 <GW_Config_GetParameter>
  8001548:	6038      	str	r0, [r7, #0]
 	// Get Parameter
@@ -2629,42 +2629,42 @@ void GW_Config_SetUp(void){
 	if(GW_u32LocalStatus_GW_Config == GW_CONFIG_PARAMETER_RESET ){
  800154a:	687b      	ldr	r3, [r7, #4]
  800154c:	2b00      	cmp	r3, #0
- 800154e:	d104      	bne.n	800155a <GW_Config_SetUp+0x26>
+ 800154e:	d103      	bne.n	8001558 <GW_Config_SetUp+0x24>
 
 		// SET CONFIG Value as Default
 		GW_voidEraseRestoreConfigPage(FLAG_PARAMETER_GW_CONFIG ,GW_CONFIG_PARAMETER_SF_BW_CR_DEFAULT );
- 8001550:	f44f 3184 	mov.w	r1, #67584	; 0x10800
- 8001554:	480b      	ldr	r0, [pc, #44]	; (8001584 <GW_Config_SetUp+0x50>)
- 8001556:	f7ff ff39 	bl	80013cc <GW_voidEraseRestoreConfigPage>
+ 8001550:	490c      	ldr	r1, [pc, #48]	; (8001584 <GW_Config_SetUp+0x50>)
+ 8001552:	480b      	ldr	r0, [pc, #44]	; (8001580 <GW_Config_SetUp+0x4c>)
+ 8001554:	f7ff ff3a 	bl	80013cc <GW_voidEraseRestoreConfigPage>
 	}
 	if(GW_u32LocalStatus_GW_Config == GW_CONFIG_PARAMETER_SET ){
 		// do nothing
 	}
 	u8SF = (GW_u32LocalParameter >> SHIFT_16_BIT)& 0xFF ;
- 800155a:	683b      	ldr	r3, [r7, #0]
- 800155c:	0c1b      	lsrs	r3, r3, #16
- 800155e:	b2da      	uxtb	r2, r3
- 8001560:	4b09      	ldr	r3, [pc, #36]	; (8001588 <GW_Config_SetUp+0x54>)
- 8001562:	701a      	strb	r2, [r3, #0]
+ 8001558:	683b      	ldr	r3, [r7, #0]
+ 800155a:	0c1b      	lsrs	r3, r3, #16
+ 800155c:	b2da      	uxtb	r2, r3
+ 800155e:	4b0a      	ldr	r3, [pc, #40]	; (8001588 <GW_Config_SetUp+0x54>)
+ 8001560:	701a      	strb	r2, [r3, #0]
 	u8BW = (GW_u32LocalParameter >> SHIFT_8_BIT)& 0xFF ;
- 8001564:	683b      	ldr	r3, [r7, #0]
- 8001566:	0a1b      	lsrs	r3, r3, #8
- 8001568:	b2da      	uxtb	r2, r3
- 800156a:	4b08      	ldr	r3, [pc, #32]	; (800158c <GW_Config_SetUp+0x58>)
- 800156c:	701a      	strb	r2, [r3, #0]
+ 8001562:	683b      	ldr	r3, [r7, #0]
+ 8001564:	0a1b      	lsrs	r3, r3, #8
+ 8001566:	b2da      	uxtb	r2, r3
+ 8001568:	4b08      	ldr	r3, [pc, #32]	; (800158c <GW_Config_SetUp+0x58>)
+ 800156a:	701a      	strb	r2, [r3, #0]
 	u8CR = (GW_u32LocalParameter >> SHIFT_0_BIT)& 0xFF ;
- 800156e:	683b      	ldr	r3, [r7, #0]
- 8001570:	b2da      	uxtb	r2, r3
- 8001572:	4b07      	ldr	r3, [pc, #28]	; (8001590 <GW_Config_SetUp+0x5c>)
- 8001574:	701a      	strb	r2, [r3, #0]
+ 800156c:	683b      	ldr	r3, [r7, #0]
+ 800156e:	b2da      	uxtb	r2, r3
+ 8001570:	4b07      	ldr	r3, [pc, #28]	; (8001590 <GW_Config_SetUp+0x5c>)
+ 8001572:	701a      	strb	r2, [r3, #0]
 }
- 8001576:	bf00      	nop
- 8001578:	3708      	adds	r7, #8
- 800157a:	46bd      	mov	sp, r7
- 800157c:	bd80      	pop	{r7, pc}
- 800157e:	bf00      	nop
- 8001580:	0801fc00 	.word	0x0801fc00
- 8001584:	0801fc04 	.word	0x0801fc04
+ 8001574:	bf00      	nop
+ 8001576:	3708      	adds	r7, #8
+ 8001578:	46bd      	mov	sp, r7
+ 800157a:	bd80      	pop	{r7, pc}
+ 800157c:	0801fc00 	.word	0x0801fc00
+ 8001580:	0801fc04 	.word	0x0801fc04
+ 8001584:	00030803 	.word	0x00030803
  8001588:	2000082d 	.word	0x2000082d
  800158c:	2000082c 	.word	0x2000082c
  8001590:	2000082e 	.word	0x2000082e

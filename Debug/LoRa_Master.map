@@ -6892,36 +6892,36 @@ LOAD C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_macro   0x000000000001b8c7      0x1c9 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o
  .debug_macro   0x000000000001ba90      0x1c2 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o
 
-.debug_line     0x0000000000000000    0x1912a
+.debug_line     0x0000000000000000    0x19128
  .debug_line    0x0000000000000000      0xa24 ./Core/Src/Encrypt_if.o
  .debug_line    0x0000000000000a24      0xa79 ./Core/Src/Flash_if.o
- .debug_line    0x000000000000149d      0xdda ./Core/Src/Flashing_LoRa.o
- .debug_line    0x0000000000002277      0xa7a ./Core/Src/GW_Config.o
- .debug_line    0x0000000000002cf1      0xd09 ./Core/Src/RTE.o
- .debug_line    0x00000000000039fa      0xb79 ./Core/Src/Recieve_FW_UART.o
- .debug_line    0x0000000000004573     0x106d ./Core/Src/SSD1306.o
- .debug_line    0x00000000000055e0      0x99b ./Core/Src/SX1278.o
- .debug_line    0x0000000000005f7b      0xa9d ./Core/Src/SX1278_hw.o
- .debug_line    0x0000000000006a18      0xafe ./Core/Src/SX1278_if.o
- .debug_line    0x0000000000007516      0xd1a ./Core/Src/UserInterface.o
- .debug_line    0x0000000000008230      0xa8a ./Core/Src/aes.o
- .debug_line    0x0000000000008cba      0x8b4 ./Core/Src/fonts.o
- .debug_line    0x000000000000956e      0xc13 ./Core/Src/main.o
- .debug_line    0x000000000000a181      0x693 ./Core/Src/operation.o
- .debug_line    0x000000000000a814      0xad7 ./Core/Src/stm32f1xx_hal_msp.o
- .debug_line    0x000000000000b2eb      0xa89 ./Core/Src/stm32f1xx_it.o
- .debug_line    0x000000000000bd74      0x583 ./Core/Src/sysmem.o
- .debug_line    0x000000000000c2f7      0x7c9 ./Core/Src/system_stm32f1xx.o
- .debug_line    0x000000000000cac0       0x78 ./Core/Startup/startup_stm32f103c8tx.o
- .debug_line    0x000000000000cb38      0x9f6 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o
- .debug_line    0x000000000000d52e      0xbde ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o
- .debug_line    0x000000000000e10c      0xad3 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.o
- .debug_line    0x000000000000ebdf      0xbae ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.o
- .debug_line    0x000000000000f78d      0xa8f ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o
- .debug_line    0x000000000001021c     0x3b6d ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.o
- .debug_line    0x0000000000013d89      0xdff ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o
- .debug_line    0x0000000000014b88     0x1c7e ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o
- .debug_line    0x0000000000016806     0x2924 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o
+ .debug_line    0x000000000000149d      0xdd8 ./Core/Src/Flashing_LoRa.o
+ .debug_line    0x0000000000002275      0xa7a ./Core/Src/GW_Config.o
+ .debug_line    0x0000000000002cef      0xd09 ./Core/Src/RTE.o
+ .debug_line    0x00000000000039f8      0xb79 ./Core/Src/Recieve_FW_UART.o
+ .debug_line    0x0000000000004571     0x106d ./Core/Src/SSD1306.o
+ .debug_line    0x00000000000055de      0x99b ./Core/Src/SX1278.o
+ .debug_line    0x0000000000005f79      0xa9d ./Core/Src/SX1278_hw.o
+ .debug_line    0x0000000000006a16      0xafe ./Core/Src/SX1278_if.o
+ .debug_line    0x0000000000007514      0xd1a ./Core/Src/UserInterface.o
+ .debug_line    0x000000000000822e      0xa8a ./Core/Src/aes.o
+ .debug_line    0x0000000000008cb8      0x8b4 ./Core/Src/fonts.o
+ .debug_line    0x000000000000956c      0xc13 ./Core/Src/main.o
+ .debug_line    0x000000000000a17f      0x693 ./Core/Src/operation.o
+ .debug_line    0x000000000000a812      0xad7 ./Core/Src/stm32f1xx_hal_msp.o
+ .debug_line    0x000000000000b2e9      0xa89 ./Core/Src/stm32f1xx_it.o
+ .debug_line    0x000000000000bd72      0x583 ./Core/Src/sysmem.o
+ .debug_line    0x000000000000c2f5      0x7c9 ./Core/Src/system_stm32f1xx.o
+ .debug_line    0x000000000000cabe       0x78 ./Core/Startup/startup_stm32f103c8tx.o
+ .debug_line    0x000000000000cb36      0x9f6 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o
+ .debug_line    0x000000000000d52c      0xbde ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o
+ .debug_line    0x000000000000e10a      0xad3 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.o
+ .debug_line    0x000000000000ebdd      0xbae ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.o
+ .debug_line    0x000000000000f78b      0xa8f ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o
+ .debug_line    0x000000000001021a     0x3b6d ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.o
+ .debug_line    0x0000000000013d87      0xdff ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o
+ .debug_line    0x0000000000014b86     0x1c7e ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o
+ .debug_line    0x0000000000016804     0x2924 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o
 
 .debug_str      0x0000000000000000    0x91c48
  .debug_str     0x0000000000000000    0x8b93b ./Core/Src/Encrypt_if.o

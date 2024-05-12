@@ -334,8 +334,8 @@ void FL_PacketLoRaSend_START(void){
 			lost_counter_pos++;
 		}
 		if(gl_u16No_Packet_Flash == 0xffff){
-					gl_u8backup_flag = 0;
-					gl_u16No_Packet_Flash = 0;
+			gl_u8backup_flag = 0;
+			gl_u16No_Packet_Flash = 0;
 		}
 		gl_u8start_array_backup++;
 		RTE_RUNNABLE_PACKET_SEND_LORA_NUM_WriteData(gl_u16No_Packet_Flash);

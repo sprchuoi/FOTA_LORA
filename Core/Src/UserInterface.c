@@ -336,14 +336,14 @@ static void UI_DisplayERROR(uint8_t Var_UIError){
 	SSD1306_UpdateScreen(); //display
 }
 
-static void UI_Send_Packet_Lost(uint16_t Var_numPacket){
+static void UI_Send_Packet_Lost(uint16_t Var_numPacket , uint16_t Var_numpacket_lost){
 	char local_UpdateBuffer[4];
 	sprintf(local_UpdateBuffer, "%d", Var_numPacket);
-	SSD1306_GotoXY (5, 20);
+	SSD1306_GotoXY (5, 10);
 	SSD1306_Puts ("UPDATING...", &Font_7x10, 1);
-	SSD1306_GotoXY (5, 40);
+	SSD1306_GotoXY (5, 20);
 	SSD1306_Puts ("PACKET RESENT:", &Font_7x10, 1);
-	SSD1306_GotoXY (100, 40);
+	SSD1306_GotoXY (100, 30);
 	SSD1306_Puts (local_UpdateBuffer, &Font_7x10, 1);
 	SSD1306_UpdateScreen(); //display
 }
