@@ -49,7 +49,7 @@ Std_ReturnType Rte_EncyptedBufferFlag_ReadData(uint8_t *SystemStateVar);
 Std_ReturnType Rte_Crc_WriteData(uint32_t CRCVar);
 Std_ReturnType Rte_ApplVer_WriteData(uint16_t ApplVerVar);
 Std_ReturnType Rte_CodeSize_WriteData(uint32_t CodeSizeVar);
-Std_ReturnType Rte_NodeAddr_WriteData(uint8_t NodeAddrVar);
+Std_ReturnType Rte_NodeAddr_WriteData(uint32_t NodeAddrVar);
 Std_ReturnType Rte_HeaderAckFlag_WriteData(uint8_t HeaderAckFLagVar);
 Std_ReturnType Rte_UpdateProgress_WriteData(uint8_t UpdateProgressVar);
 
@@ -59,7 +59,7 @@ Std_ReturnType Rte_UpdateProgress_WriteData(uint8_t UpdateProgressVar);
 Std_ReturnType Rte_Crc_ReadData(uint32_t *CRCVar);
 Std_ReturnType Rte_ApplVer_ReadData(uint16_t *ApplVerVar);
 Std_ReturnType Rte_CodeSize_ReadData(uint32_t *CodeSizeVar);
-Std_ReturnType Rte_NodeAddr_ReadData(uint8_t *NodeAddrVar);
+Std_ReturnType Rte_NodeAddr_ReadData(uint32_t *NodeAddrVar);
 Std_ReturnType Rte_HeaderAckFlag_ReadData(uint8_t *HeaderAckFLagVar);
 Std_ReturnType Rte_UpdateProgress_ReadData(uint8_t *UpdateProgressVar);
 
@@ -101,5 +101,12 @@ Std_ReturnType Rte_PacketLoRaReceived_WriteData(uint8_t *BufferLoRaReceivedP2Var
 /*                         Ports Read Received Packet LoRa                */
 /**************************************************************************/
 Std_ReturnType Rte_PacketLoRaReceived_ReadData(uint8_t **BufferLoRaReceivedP2Var );
+
+
+
+Std_ReturnType Rte_Flag_LoRaRequestDevice_WriteData(uint8_t FlagLoRa_DeviceVar);
+
+
+Std_ReturnType Rte_Flag_LoRaRequestDevice_ReadData(uint8_t *FlagLoRa_DeviceVar);
 
 #endif /* INC_RTE_H_ */

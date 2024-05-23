@@ -1,2 +1,4 @@
-../Core/Src/Encrypt_if.c:23:6:Encrypt_Address_Read_Init	1
-../Core/Src/Encrypt_if.c:27:6:Encrypt_MainFunc	5
+../Core/Src/Encrypt_if.c:24:6:Encrypt_Address_Read_Init	1
+../Core/Src/Encrypt_if.c:28:10:Calculate_CRC_firmware	2
+../Core/Src/Encrypt_if.c:43:6:Encrypt_MainFunc	5
+../Core/Src/Encrypt_if.c:84:6:Decrypt_MainFunc	1

@@ -32,9 +32,9 @@ Core/Src/Flashing_LoRa.o: ../Core/Src/Flashing_LoRa.c \
  ../Core/Inc/RTE_FlashingPort.h ../Core/Inc/Rte.h \
  ../Core/Inc/RTE_STD_Types.h ../Core/Inc/Receive_FW_UART.h \
  ../Core/Inc/GW_Config.h ../Core/Inc/UserInterface.h \
- ../Core/Inc/Flashing_LoRa.h ../Core/Inc/operation.h \
- ../Core/Inc/STD_TYPE.h ../Core/Inc/Encrypt_if.h ../Core/Inc/aes.h \
- ../Core/Inc/RTE.h ../Core/Inc/Flash_If.h ../Core/Inc/SX1278_if.h \
+ ../Core/Inc/Flashing_LoRa.h ../Core/Inc/Encrypt_if.h ../Core/Inc/aes.h \
+ ../Core/Inc/RTE.h ../Core/Inc/operation.h ../Core/Inc/STD_TYPE.h \
+ ../Core/Inc/Flash_If.h ../Core/Inc/SX1278_if.h \
  ../Core/Inc/UserInterface_privateFunc.h
 ../Core/Inc/Flashing_LoRa.h:
 ../Core/Inc/SX1278_if.h:
@@ -76,11 +76,11 @@ Core/Src/Flashing_LoRa.o: ../Core/Src/Flashing_LoRa.c \
 ../Core/Inc/GW_Config.h:
 ../Core/Inc/UserInterface.h:
 ../Core/Inc/Flashing_LoRa.h:
-../Core/Inc/operation.h:
-../Core/Inc/STD_TYPE.h:
 ../Core/Inc/Encrypt_if.h:
 ../Core/Inc/aes.h:
 ../Core/Inc/RTE.h:
+../Core/Inc/operation.h:
+../Core/Inc/STD_TYPE.h:
 ../Core/Inc/Flash_If.h:
 ../Core/Inc/SX1278_if.h:
 ../Core/Inc/UserInterface_privateFunc.h:

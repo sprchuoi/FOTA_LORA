@@ -16,9 +16,9 @@
 /*****************************************************************************************/
 /*                                   Include headres                                     */
 /*****************************************************************************************/
-#define STORE_AREA_START_ADDRESS 0x0800D000
+#define STORE_AREA_START_ADDRESS 0x08010000
 #define ADDRESS_BANK_FIRST (uint32_t)(0x08005000)
-#define ADDRESS_BANK_SECOND (uint32_t)(0x0800D000)
+#define ADDRESS_BANK_SECOND (uint32_t)(0x08010000)
 extern struct AES_ctx ctx;
 /************************************************************************************
 
@@ -62,4 +62,26 @@ void Encrypt_MainFunc(void);
 void Encrypt_Address_Read_Init(void) ;
 
 
+/************************************************************************************
+
+*Name       :   Calculate_CRC_firmware
+
+*Description: Init Read address
+
+
+*Pre-Cond   :  buffer flag is not set & sys flag is assign to encrypt
+
+*pos-Cond   :  buffer flag is set & sys flag is assign to send
+
+*Input      :   void
+
+*Output     :   void
+
+*Return     :   void
+
+****************************************************************************************/
+uint32_t Calculate_CRC_firmware(uint8_t *buffer_firmware) ;
+
+
+void Decrypt_MainFunc(uint8_t * gl_u8FwFragment);
 #endif /* INC_ENCRYPT_IF_H_ */

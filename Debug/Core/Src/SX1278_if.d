@@ -32,8 +32,8 @@ Core/Src/SX1278_if.o: ../Core/Src/SX1278_if.c ../Core/Inc/SX1278_if.h \
  ../Core/Inc/RTE_STD_Types.h ../Core/Inc/Receive_FW_UART.h \
  ../Core/Inc/GW_Config.h ../Core/Inc/UserInterface.h \
  ../Core/Inc/Flashing_LoRa.h ../Core/Inc/SX1278_if.h \
- ../Core/Inc/Flash_If.h ../Core/Inc/operation.h ../Core/Inc/STD_TYPE.h \
- ../Core/Inc/Encrypt_if.h ../Core/Inc/aes.h ../Core/Inc/RTE.h \
+ ../Core/Inc/Flash_If.h ../Core/Inc/Encrypt_if.h ../Core/Inc/aes.h \
+ ../Core/Inc/RTE.h ../Core/Inc/operation.h ../Core/Inc/STD_TYPE.h \
  ../Core/Inc/SX1278.h
 ../Core/Inc/SX1278_if.h:
 ../Core/Inc/SX1278.h:
@@ -76,9 +76,9 @@ Core/Src/SX1278_if.o: ../Core/Src/SX1278_if.c ../Core/Inc/SX1278_if.h \
 ../Core/Inc/Flashing_LoRa.h:
 ../Core/Inc/SX1278_if.h:
 ../Core/Inc/Flash_If.h:
-../Core/Inc/operation.h:
-../Core/Inc/STD_TYPE.h:
 ../Core/Inc/Encrypt_if.h:
 ../Core/Inc/aes.h:
 ../Core/Inc/RTE.h:
+../Core/Inc/operation.h:
+../Core/Inc/STD_TYPE.h:
 ../Core/Inc/SX1278.h:

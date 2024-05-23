@@ -15,14 +15,22 @@
 #define GW_END_OF_FLAG_ADDR 			(0x0801FC50)
 #define FLAG_STATUS_GW_CONFIG 			(GW_START_OF_FLAG_ADDR)
 #define FLAG_PARAMETER_GW_CONFIG		(0x0801FC04)
+#define FLAG_STATE_GW_CONFIG			(0x0801FC08)
 
 //Define Value Flag
 #define GW_CONFIG_PARAMETER_SET 		 0xFFFFFFFF
 #define GW_CONFIG_PARAMETER_RESET		 0x00000000
-#define GW_CONFIG_PARAMETER_SF_BW_CR_DEFAULT		 0x00030803 //  SF_9 BW07 CR4_5
+#define GW_CONFIG_PARAMETER_SF_BW_CR_DEFAULT		 0x00010801 //  SF_9 BW07 CR4_5
 #define ERASED_VALUE                      0xFFFFFFFF
 #define WORD_SIZE_IN_BYTE                     4
 
+
+//info flash
+#define FLAG_STATUS_BANKSECOND_APP_VER_ADDRESS                      (0x0801FC30)
+#define FLAG_STATUS_ADDRESS_TARGET_ADDRESS                 		    (0x0801FC34)
+#define FLAG_STATUS_SIZE_BANKSECOND_REGION_ADDRESS                  (0x0801FC38)
+#define FLAG_STATUS_CRC_BANKSECOND_REGION_ADDRESS                   (0x0801FC3C)
+#define FLAG_STATUS_ENTRY_POINT_VALUE_BANKSECOND_REGION_ADDRESS     (0x0801FC40)
 //parameter
 extern uint8_t u8BW; // Bandwidth
 extern uint8_t u8SF; // Spreading Frequency
@@ -136,4 +144,12 @@ void GW_voidEraseRestoreConfigPage(uint32_t Copy_u32Address, uint32_t Copy_u32Ne
 *******************************************************************************/
 
 void GW_Config_SetUp(void);
+
+
+
+
+
+void GW_State_Init(void);
+
+void GW_State_Save_State(uint8_t State);
 #endif /*_GW_CONFIG_H_*/

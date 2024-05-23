@@ -7,5 +7,12 @@
 ../Core/Src/aes.c:266:13:ShiftRows	24	static
 ../Core/Src/aes.c:294:16:xtime	16	static
 ../Core/Src/aes.c:300:13:MixColumns	24	static
+../Core/Src/aes.c:350:13:InvMixColumns	32	static
+../Core/Src/aes.c:371:13:InvSubBytes	24	static
+../Core/Src/aes.c:383:13:InvShiftRows	24	static
 ../Core/Src/aes.c:413:13:Cipher	24	static
+../Core/Src/aes.c:439:13:InvCipher	24	static
+../Core/Src/aes.c:492:13:XorWithIv	24	static
+../Core/Src/aes.c:501:6:AES_CBC_encrypt_buffer	32	static
+../Core/Src/aes.c:516:6:AES_CBC_decrypt_buffer	56	static
 ../Core/Src/aes.c:538:6:AES_CTR_xcrypt_buffer	56	static

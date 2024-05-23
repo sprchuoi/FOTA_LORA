@@ -16,7 +16,7 @@ static uint8_t  gl_u8SystemState = INITIAL_VALUE_ZERO;
 static uint32_t  gl_u32CRCVar = INITIAL_VALUE_ZERO;
 static uint16_t  gl_u8ApplVerVar = INITIAL_VALUE_ZERO;
 static uint32_t  gl_u32CodeSizeVar= INITIAL_VALUE_ZERO;
-static uint8_t  gl_u8NodeAddrVar=INITIAL_VALUE_ZERO;
+static uint32_t  gl_u32NodeAddrVar=INITIAL_VALUE_ZERO;
 static uint8_t  gl_u8HeaderAckFLagVar = INITIAL_VALUE_ZERO;
 static uint8_t  gl_u8UpdateProgressVar= INITIAL_VALUE_ZERO;
 static uint8_t  gl_u8UserResponseVar = INITIAL_VALUE_ZERO;
@@ -25,7 +25,8 @@ static uint8_t  *gl_EncryptDataBufferPtr = NULL_PTR;
 static uint8_t  gl_u8UIErrorVar = INITIAL_VALUE_ZERO;
 static uint16_t  gl_u16NumPacketLoraFWVar = INITIAL_VALUE_ZERO;
 static uint8_t  gl_u8FlagLoRaRespVar = INITIAL_VALUE_ZERO;
-static uint8_t  gl_u8FlagLoraConfigVar = INITIAL_VALUE_ZERO;
+static uint32_t  gl_u32FlagLoraConfigVar = INITIAL_VALUE_ZERO;
+static uint8_t 	gl_u8FlagLoRa_DeviceVar = INITIAL_VALUE_ZERO;
 static uint32_t gl_u32Active_AddressVar = INITIAL_VALUE_ZERO;
 
 static uint8_t gl_u8EncyptedBufferFlagVar = INITIAL_VALUE_ZERO;
@@ -98,9 +99,9 @@ Std_ReturnType Rte_CodeSize_WriteData(uint32_t CodeSizeVar){
 	gl_u32CodeSizeVar = CodeSizeVar;
 	return retVal;
 }
-Std_ReturnType Rte_NodeAddr_WriteData(uint8_t NodeAddrVar){
+Std_ReturnType Rte_NodeAddr_WriteData(uint32_t NodeAddrVar){
 	Std_ReturnType retVal = RTE_E_OKE;
-	gl_u8NodeAddrVar = NodeAddrVar;
+	gl_u32NodeAddrVar = NodeAddrVar;
 	return retVal;
 }
 
@@ -134,9 +135,9 @@ Std_ReturnType Rte_CodeSize_ReadData(uint32_t *CodeSizeVar){
 	(*CodeSizeVar) = gl_u32CodeSizeVar;
 	return retVal;
 }
-Std_ReturnType Rte_NodeAddr_ReadData(uint8_t *NodeAddrVar){
+Std_ReturnType Rte_NodeAddr_ReadData(uint32_t *NodeAddrVar){
 	Std_ReturnType retVal = RTE_E_OKE;
-	(*NodeAddrVar) = gl_u8NodeAddrVar;
+	(*NodeAddrVar) = gl_u32NodeAddrVar;
 	return retVal;
 }
 Std_ReturnType Rte_HeaderAckFlag_ReadData(uint8_t *HeaderAckFLagVar){
@@ -196,7 +197,7 @@ Std_ReturnType Rte_FlagLoRaResp_WriteData(uint8_t FlagLoRaRespVar){
 
 Std_ReturnType Rte_FlagConfigLoRA_WriteData(uint32_t FlagLoraConfigVar){
 	Std_ReturnType retVal = RTE_E_OKE;
-	gl_u8FlagLoraConfigVar = FlagLoraConfigVar;
+	gl_u32FlagLoraConfigVar = FlagLoraConfigVar;
 	return retVal;
 }
 
@@ -218,7 +219,7 @@ Std_ReturnType Rte_FlagLoRaResp_ReadData(uint8_t *FlagLoRaRespVar){
 
 Std_ReturnType Rte_FlagConfigLoRA_ReadData(uint32_t *FlagLoraConfigVar){
 	Std_ReturnType retVal = RTE_E_OKE;
-	(*FlagLoraConfigVar) =gl_u8FlagLoraConfigVar ;
+	(*FlagLoraConfigVar) =gl_u32FlagLoraConfigVar ;
 	return retVal;
 }
 
@@ -240,6 +241,18 @@ Std_ReturnType Rte_PacketLoRaReceived_ReadData(uint8_t **BufferLoRaReceivedP2Var
 	return retVal;
 }
 
+
+Std_ReturnType Rte_Flag_LoRaRequestDevice_WriteData(uint8_t FlagLoRa_DeviceVar){
+	Std_ReturnType retVal = RTE_E_OKE;
+	gl_u8FlagLoRa_DeviceVar = FlagLoRa_DeviceVar;
+	return retVal;
+}
+
+Std_ReturnType Rte_Flag_LoRaRequestDevice_ReadData(uint8_t *FlagLoRa_DeviceVar){
+	Std_ReturnType retVal = RTE_E_OKE;
+	(*FlagLoRa_DeviceVar) = gl_u8FlagLoRa_DeviceVar;
+	return retVal;
+}
 
 
 

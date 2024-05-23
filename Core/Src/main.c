@@ -44,16 +44,21 @@ I2C_HandleTypeDef hi2c1;
 IWDG_HandleTypeDef hiwdg;
 
 SPI_HandleTypeDef hspi1;
+SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart2;
 
-SX1278_hw_t SX1278_hw;
-
-SX1278_t SX1278;
 /* USER CODE BEGIN PV */
+SX1278_hw_t SX1278_hw_1;
 
+SX1278_t SX1278_1;
+
+SX1278_hw_t SX1278_hw_2;
+
+SX1278_t SX1278_2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,6 +69,8 @@ static void MX_SPI1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_SPI2_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
 
@@ -81,6 +88,8 @@ uint32_t currentMillis =INITIAL_VALUE_ZERO ;
 uint32_t CounterOutsite =INITIAL_VALUE_ZERO;
 uint32_t CounterInsite =INITIAL_VALUE_ZERO;
 uint32_t SysTem_State = IDLE;
+uint32_t gl_flagRequest = INITIAL_VALUE_ZERO;
+uint8_t buffer_req_2[16];
 /* DUMP format */
 const uint32_t config_LoRa[1] __attribute__((section(".config_LoRa"))) = {GW_CONFIG_PARAMETER_SF_BW_CR_DEFAULT};
 /* USER CODE END 0 */
@@ -115,29 +124,44 @@ int main(void)
   MX_GPIO_Init();
   //MX_IWDG_Init();
   MX_SPI1_Init();
-  //MX_TIM1_Init();
+  MX_TIM1_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
+  MX_SPI2_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  //initialize LoRa module
-  SX1278_hw.dio0.port = DIO0_GPIO_Port;
-  SX1278_hw.dio0.pin = DIO0_Pin;
-  SX1278_hw.nss.port = NSS_GPIO_Port;
-  SX1278_hw.nss.pin = NSS_Pin;
-  SX1278_hw.reset.port = RESET_GPIO_Port;
-  SX1278_hw.reset.pin = RESET_Pin;
-  SX1278_hw.spi = &hspi1;
-  SX1278.hw = &SX1278_hw;
+  //initialize LoRa module 1
+  SX1278_hw_1.dio0.port = DIO_GPIO_Port;
+  SX1278_hw_1.dio0.pin = DIO_Pin;
+  SX1278_hw_1.nss.port = NSS_GPIO_Port;
+  SX1278_hw_1.nss.pin = NSS_Pin;
+  SX1278_hw_1.reset.port = RESET_GPIO_Port;
+  SX1278_hw_1.reset.pin = RESET_Pin;
+  SX1278_hw_1.spi = &hspi1;
+  SX1278_1.hw = &SX1278_hw_1;
+
+  //initialize LoRa module 2
+  SX1278_hw_2.dio0.port = DIO_2_GPIO_Port;
+  SX1278_hw_2.dio0.pin = DIO_2_Pin;
+  SX1278_hw_2.nss.port = SPI2_NSS_GPIO_Port;
+  SX1278_hw_2.nss.pin = SPI2_NSS_Pin;
+  SX1278_hw_2.reset.port = RESET2_GPIO_Port;
+  SX1278_hw_2.reset.pin = RESET2_Pin;
+  SX1278_hw_2.spi = &hspi2;
+  SX1278_2.hw = &SX1278_hw_2;
+
   /*GW Config Init first to get the config */
+  GW_State_Init();
   GW_Config_Init();
-  ReceiveFWUpdate_Init();
   Encrypt_Address_Read_Init();
   UI_Init();
+  ReceiveFWUpdate_Init();
+  // Init timer
+  //HAL_TIM_Base_Start_IT(&htim2);
+
   //Test Flash
-  RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_REQUEST_OTA);
-  RTE_RUNNABLE_APP_VER_WriteData(0x012);
-  RTE_RUNNABLE_NODE_ADDR_WriteData(0x01);
-  RTE_RUNNABLE_CODE_SIZE_WriteData(0x6D58);
+  //RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_IDLE);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -148,9 +172,14 @@ int main(void)
 	  RTE_RUNNABLE_SYSTEM_STATE_ReadData(&SysTem_State);
 	  switch (SysTem_State)
 	  {
-
-
+//	  	case SYS_IDLE:
+//
+//	  		break;
+		case SYS_NEW_UPDATE_REQ:
+			ReceiveFWUpdate_MainFunc();
+			break;
 		case SYS_RECEIVE_UPDATE:
+			//UI_Main_FLASHING();
 			ReceiveFWUpdate_MainFunc();
 			break;
 		case SYS_REQUEST_OTA:
@@ -178,8 +207,35 @@ int main(void)
 		default:
 			break;
 	  }
+//	  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData(&gl_flagRequest);
+//	  if(gl_flagRequest == 0x01){
+//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
+//		 Send_request(&SX1278_1, ADDRESS__MAC_NODE_1, buffer_req_2, GW_REQ_PARAMETER);
+//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+//		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
+//
+//
+//
+//	  }
+//	  else if(gl_flagRequest == 0x02){
+//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
+//		 Send_request(&SX1278_1, ADDRESS__MAC_NODE_2, buffer_req_2, GW_REQ_PARAMETER);
+//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+//		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
+//	  }
+//	  else if(gl_flagRequest = 0x03){
+//		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
+//		  Send_request(&SX1278_1, ADDRESS__MAC_NODE_3, buffer_req_2, GW_REQ_PARAMETER);
+//		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+//		  //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
+//
+//	  }
+	  gl_flagRequest = 0x00;
+		 //HAL_UART_Transmit(&huart2, &buffer_resp_2, 16, HAL_MAX_DELAY);
 	  UI_Main_FLASHING();
 
+
+	  //HAL_UART_Transmit(&huart2, "Hello ESP", 9, HAL_MAX_DELAY);
 
 
     /* USER CODE END WHILE */
@@ -263,8 +319,6 @@ static void MX_I2C1_Init(void)
 
 }
 
-
-
 /**
   * @brief IWDG Initialization Function
   * @param None
@@ -292,9 +346,6 @@ static void MX_IWDG_Init(void)
   /* USER CODE END IWDG_Init 2 */
 
 }
-
-
-
 
 /**
   * @brief SPI1 Initialization Function
@@ -331,6 +382,44 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
 
 }
 
@@ -378,6 +467,51 @@ static void MX_TIM1_Init(void)
   /* USER CODE BEGIN TIM1_Init 2 */
 
   /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 999;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 7999;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
 
 }
 
@@ -438,7 +572,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, RESET_Pin|DIO0_Pin|MODE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, RESET_Pin|MODE_Pin|RESET2_Pin|SPI2_NSS_Pin
+                          |RECEIIVE_Pin|SEND_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -454,22 +589,20 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(NSS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RESET_Pin DIO0_Pin MODE_Pin */
-  GPIO_InitStruct.Pin = RESET_Pin|DIO0_Pin|MODE_Pin;
+  /*Configure GPIO pins : RESET_Pin MODE_Pin RESET2_Pin SPI2_NSS_Pin
+                           RECEIIVE_Pin SEND_Pin */
+  GPIO_InitStruct.Pin = RESET_Pin|MODE_Pin|RESET2_Pin|SPI2_NSS_Pin
+                          |RECEIIVE_Pin|SEND_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA8 PA9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+  /*Configure GPIO pins : DIO_Pin DIO_2_Pin */
+  GPIO_InitStruct.Pin = DIO_Pin|DIO_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -478,15 +611,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	CounterOutsite++;
-	currentMillis = HAL_GetTick();
-	if(GPIO_Pin == BTN_EXT_Pin_8 && (currentMillis - previousMillis > 10)){
-		HAL_GPIO_TogglePin(GPIOB, BTN_EXT_Pin_8);
-		previousMillis = currentMillis;
 
-	}
-}
 /* USER CODE END 4 */
 
 /**

@@ -34,7 +34,7 @@
 #define SIZE_BUFFER_16BYTES		16u
 #define SIZE_BUFFER_128BYTES  	128u
 #define SIZE_BUFFER_80BYTES		80u
-#define ADDR_NODE_1  0x01
+#define SIZE_BUFFER_112BYTES	112u
 
 #define WAIT_PACKET_SEND 		00u
 typedef enum{
@@ -47,7 +47,7 @@ typedef enum{
 
 extern uint8_t buffer_req[16];
 extern uint8_t buffer_packet[80];
-extern uint8_t buffer_packet_Rx[80];
+extern uint8_t buffer_packet_Rx[112];
 extern uint8_t *buffer_flashing_data;
 extern uint8_t ret ;
 extern uint8_t packet_lost;
@@ -58,12 +58,13 @@ extern uint8_t Power;
 extern uint8_t SF;
 extern uint8_t BandWidth;
 extern uint8_t CR;
-extern uint8_t u8buffer_Pack_Lost[64];
+extern uint8_t u8buffer_Pack_Lost[88];
+extern uint8_t buffer_req_2[16];
 LoRa_Return_t LORA_IF_Stransmit_Request(SX1278_t *module , uint8_t* buffer_req,uint8_t* buffer_resp ,
-		uint8_t ret , uint8_t addr ,uint8_t ACK_req , uint8_t ACK_resp );
+		uint8_t ret ,uint8_t ACK_req , uint8_t ACK_resp );
 LoRa_Return_t LORA_IF_Stransmit_Fragment_Firmware(SX1278_t *module ,uint8_t* buffer_flashing_data);
-uint8_t LORA_IF_GetData_Frame(SX1278_t *module , uint8_t* buffer , uint8_t ret , uint32_t timeout , uint8_t length , uint8_t ACK_resp);
+uint8_t LORA_IF_GetData_Frame(SX1278_t *module ,uint32_t unicast_address, uint8_t* buffer , uint8_t ret , uint32_t timeout , uint8_t length , uint8_t ACK_resp);
 LoRa_Return_t LORA_IF_Stransmit_Data_Frame(SX1278_t *module, uint8_t *txBuffer, uint8_t length, uint32_t timeout);
 uint8_t LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer ,uint8_t no ,  uint8_t ret , uint32_t timeout , uint8_t length);
-uint8_t LORA_IF_GetData_End_Frame(SX1278_t *module, uint8_t *rxBuffer, uint8_t length, uint32_t timeout);
+uint8_t LORA_IF_GetData_End_Frame(SX1278_t *module, uint8_t *rxBuffer, uint32_t unicast_addr  , uint8_t length, uint32_t timeout);
 #endif /*__SX1278_IF_H__*/

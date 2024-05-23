@@ -36,13 +36,20 @@ extern "C" {
 #include "GW_Config.h"
 #include "UserInterface.h"
 #include "Flashing_LoRa.h"
+#include "Encrypt_if.h"
 extern IWDG_HandleTypeDef hiwdg;
 
 extern SPI_HandleTypeDef hspi1;
 
-extern SX1278_hw_t SX1278_hw;
+extern SPI_HandleTypeDef hspi2;
 
-extern SX1278_t SX1278;
+extern SX1278_hw_t SX1278_hw_1;
+
+extern SX1278_t SX1278_1;
+
+extern SX1278_hw_t SX1278_hw_2;
+
+extern SX1278_t SX1278_2;
 
 extern I2C_HandleTypeDef hi2c1;
 
@@ -77,12 +84,21 @@ void Error_Handler(void);
 #define NSS_GPIO_Port GPIOA
 #define RESET_Pin GPIO_PIN_0
 #define RESET_GPIO_Port GPIOB
-#define DIO0_Pin GPIO_PIN_1
-#define DIO0_GPIO_Port GPIOB
+#define DIO_Pin GPIO_PIN_1
+#define DIO_GPIO_Port GPIOB
 #define MODE_Pin GPIO_PIN_2
 #define MODE_GPIO_Port GPIOB
-#define BTN_EXT_Pin_8 GPIO_PIN_8
-#define BTN_EXT_GPIO_Port GPIOB
+#define DIO_2_Pin GPIO_PIN_10
+#define DIO_2_GPIO_Port GPIOB
+#define RESET2_Pin GPIO_PIN_11
+#define RESET2_GPIO_Port GPIOB
+#define SPI2_NSS_Pin GPIO_PIN_12
+#define SPI2_NSS_GPIO_Port GPIOB
+#define RECEIIVE_Pin GPIO_PIN_8
+#define RECEIIVE_GPIO_Port GPIOB
+#define SEND_Pin GPIO_PIN_9
+#define SEND_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

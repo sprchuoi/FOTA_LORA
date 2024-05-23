@@ -94,5 +94,14 @@
 /*                         Ports Read Sending Packet LoRa            */
 /**************************************************************************/
 #define    RTE_RUNNABLE_PACKET_LORA_REIVECED_ReadData		Rte_PacketLoRaReceived_ReadData
+
+/***************************************************************************/
+/* 							Ports Define Send Send Request LoRa data       */
+/***************************************************************************/
+#define    RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData		Rte_Flag_LoRaRequestDevice_WriteData
+/***************************************************************************/
+/* 							Ports Define Send Send Request LoRa data       */
+/***************************************************************************/
+#define    RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData		Rte_Flag_LoRaRequestDevice_ReadData
 #endif /* INC_API_ENCRYPTPORT_H_ */
 

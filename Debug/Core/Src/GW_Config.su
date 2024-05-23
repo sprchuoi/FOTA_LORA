@@ -1,4 +1,6 @@
 ../Core/Src/GW_Config.c:16:10:GW_Config_GetParameter	16	static
 ../Core/Src/GW_Config.c:21:6:GW_voidEraseRestoreConfigPage	224	static
 ../Core/Src/GW_Config.c:60:6:GW_Config_Init	32	static
-../Core/Src/GW_Config.c:64:6:GW_Config_SetUp	16	static
+../Core/Src/GW_Config.c:73:6:GW_State_Save_State	16	static
+../Core/Src/GW_Config.c:76:6:GW_State_Init	16	static
+../Core/Src/GW_Config.c:86:6:GW_Config_SetUp	16	static

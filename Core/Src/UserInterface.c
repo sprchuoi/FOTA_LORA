@@ -28,7 +28,7 @@ static uint32_t gl_u32Version;
 /**************************************************/
 void UI_Init(void){
 	// Init variables
-	gl_UISTATE = UI_START_OTA;
+	gl_UISTATE = UI_IDLE;
 	gl_u8DownLoadProgress = INIT_VAL_ZERO;
 	gl_u32SizeCodeFw = INIT_VAL_ZERO;
 	gl_counterdot = INIT_VAL_ZERO;
@@ -37,6 +37,11 @@ void UI_Init(void){
 	/*Run main Appication before go to Flashing Appl*/
 	// Init Flashing
 	UI_Init_Flashing_Screen();
+	RTE_RUNNABLE_SYSTEM_STATE_ReadData(&gl_SystemState);
+	if(gl_SystemState == SYS_REQUEST_OTA){
+		UI_Clean();
+		gl_UISTATE = UI_START_OTA;
+	}
 
 }
 
@@ -45,19 +50,24 @@ void UI_Main_FLASHING(void){
 		/* UI_IDE STATE */
 		case UI_IDLE:
 		{
+			UI_Init_Flashing_Screen();
 			// Get System state Via RTE
 			Std_ReturnType retVal  = RTE_RUNNABLE_SYSTEM_STATE_ReadData(&gl_SystemState);
 			if(RTE_E_OKE == retVal){
-				if(SYS_NEW_UPDATE_REQ == gl_SystemState )
+				if(SYS_RECEIVE_UPDATE == gl_SystemState )
 				{
 					// Clean UI screen
 					UI_Clean();
-					// Display Information for FLashing
 					UI_WaitForResp();
-
+					HAL_Delay(1000);
+					UI_Clean();
+					// Display Information for FLashing
+					UI_Downloading_FW();
 					gl_UISTATE =  UI_DOWNLOADING_FW;
+
 				}
 			}
+
 			else{
 				/*State In IDLE STATE and Change UI to ERROR STATE*/
 				gl_UISTATE = UI_DISPLAYERROR;
@@ -73,8 +83,7 @@ void UI_Main_FLASHING(void){
 				{
 					HAL_Delay(2000);
 					UI_Clean();
-					UI_SendSW_LoRa(INITIAL_VALUE_ZERO);
-					gl_UISTATE = UI_SYNCONFIGURATION;
+					gl_UISTATE = UI_START_OTA;
 				}
 			}
 			break;
@@ -209,9 +218,9 @@ void UI_Main_FLASHING(void){
 /**********************************************************/
 static void UI_Init_Flashing_Screen(void){
 	/* Set Backgroun color */
-	SSD1306_GotoXY (0,10); // goto 10, 10
+	SSD1306_GotoXY (5,10); // goto 10, 10
 	SSD1306_Puts("GATEWAY", &Font_11x18, 1); // print start FUOTA
-	SSD1306_GotoXY (5, 40);
+	SSD1306_GotoXY (10, 40);
 	SSD1306_Puts ("FUOTA UPDATE!!", &Font_7x10, 1);
 	SSD1306_UpdateScreen(); // update screen
 }
@@ -221,12 +230,19 @@ static void UI_Clean(void){
 }
 
 static void UI_WaitForResp(void){
-	uint8_t local_u8NodeAddr = 0U;
+	uint32_t local_u32NodeAddr = 0U;
 	uint32_t local_u32Codesize = 0U;
 	uint16_t local_u16Appver=0U;
 	RTE_RUNNABLE_CODE_SIZE_ReadData(&local_u32Codesize);
 	RTE_RUNNABLE_APP_VER_ReadData(&local_u16Appver);
-	RTE_RUNNABLE_NODE_ADDR_ReadData(&local_u8NodeAddr);
+	RTE_RUNNABLE_NODE_ADDR_ReadData(&local_u32NodeAddr);
+	char buffer_version[10];
+	char buffer_data_id[10];
+
+	uint8_t major_version = (local_u16Appver >> 8) & 0xFF; // Extract major version (e.g., 1 from 0x00000131)
+	uint8_t minor_version = local_u16Appver & 0xFF; // Extract minor version (e.g., 3 from 0x00000131)
+	sprintf(buffer_data_id, "0x%X", local_u32NodeAddr);
+	sprintf(buffer_version, "%d.%d", major_version, minor_version);
 	char Local_DataBuffer[4];
 	uint8_t local_estimatime = local_u32Codesize/BandWidth_UART +20;
 	SSD1306_GotoXY (20, 0);
@@ -234,26 +250,23 @@ static void UI_WaitForResp(void){
 	sprintf(Local_DataBuffer , "%d" ,local_u16Appver );
 	SSD1306_GotoXY (20, 10);
 	SSD1306_Puts ("Version:", &Font_7x10, 1);
-	SSD1306_GotoXY (30, 10);
-	SSD1306_Puts (Local_DataBuffer, &Font_7x10, 1);
+	SSD1306_GotoXY (60, 10);
+	SSD1306_Puts (buffer_version, &Font_7x10, 1);
 	SSD1306_GotoXY (20, 20);
 	SSD1306_Puts ("Address:", &Font_7x10, 1);
-	sprintf(Local_DataBuffer , "%d" ,local_u8NodeAddr );
-	SSD1306_GotoXY (30, 20);
-	SSD1306_Puts (Local_DataBuffer, &Font_7x10, 1);
+	SSD1306_GotoXY (60, 20);
+	SSD1306_Puts (buffer_data_id, &Font_7x10, 1);
 	SSD1306_UpdateScreen(); // update screen
 }
 static void UI_Downloading_FW(void){
 	/* Writeing Text */
 	SSD1306_GotoXY (40, 10);
-	SSD1306_Puts ("Download", &Font_7x10, 1);
+	SSD1306_Puts ("Downloading", &Font_7x10, 1);
 	SSD1306_GotoXY (40, 20);
 	SSD1306_Puts ("  in", &Font_7x10, 1);
 	SSD1306_GotoXY (40, 30);
 	SSD1306_Puts ("Progress", &Font_7x10, 1);
 	SSD1306_GotoXY (50, 40);
-	SSD1306_Puts ("  0%", &Font_7x10, 1);
-	SSD1306_UpdateScreen(); //display
 }
 static void UI_UpdateDownloading_FW(uint8_t Var_Progress){
 	char local_UpdateBuffer[4];
@@ -267,16 +280,28 @@ static void UI_UpdateDownloading_FW(uint8_t Var_Progress){
 static void UI_DoneDownload_FW(void){
 	/* Writing Text */
 	Std_ReturnType retVal = RTE_RUNNABLE_APP_VER_ReadData(&gl_u32Version);
+	char buffer_version[10];
+	char buffer_data_id[10];
+	uint32_t local_u32NodeAddr = 0U;
+	RTE_RUNNABLE_NODE_ADDR_ReadData(&local_u32NodeAddr);
+	uint8_t major_version = (gl_u32Version >> 8) & 0xFF; // Extract major version (e.g., 1 from 0x00000131)
+	uint8_t minor_version = gl_u32Version & 0xFF; // Extract minor version (e.g., 3 from 0x00000131)
+	sprintf(buffer_version, "%d.%d", major_version, minor_version);
+	sprintf(buffer_data_id, "0x%X", local_u32NodeAddr);
 	char local_UpdateBuffer[4];
-	sprintf(local_UpdateBuffer , "%d" , gl_u32Version);
 	SSD1306_GotoXY (40, 10);
 	SSD1306_Puts ("FUOTA", &Font_11x18, 1);
 	SSD1306_GotoXY (30, 30);
 	SSD1306_Puts ("COMPLETED", &Font_7x10, 1);
 	SSD1306_GotoXY (30, 40);
+
 	SSD1306_Puts ("VERSION: ", &Font_7x10, 1);
 	SSD1306_GotoXY (100, 40);
-	SSD1306_Puts (local_UpdateBuffer, &Font_7x10, 1);
+	SSD1306_Puts (buffer_version, &Font_7x10, 1);
+	SSD1306_GotoXY (20, 50);
+	SSD1306_Puts ("Address:", &Font_7x10, 1);
+	SSD1306_GotoXY (60, 50);
+	SSD1306_Puts (buffer_data_id, &Font_7x10, 1);
 	SSD1306_UpdateScreen(); //display
 }
 
@@ -336,7 +361,7 @@ static void UI_DisplayERROR(uint8_t Var_UIError){
 	SSD1306_UpdateScreen(); //display
 }
 
-static void UI_Send_Packet_Lost(uint16_t Var_numPacket , uint16_t Var_numpacket_lost){
+static void UI_Send_Packet_Lost(uint16_t Var_numPacket){
 	char local_UpdateBuffer[4];
 	sprintf(local_UpdateBuffer, "%d", Var_numPacket);
 	SSD1306_GotoXY (5, 10);

@@ -48,7 +48,7 @@ HAL_StatusTypeDef F_Erase_Image(uint32_t ImageAddress)
 	Local_eraseInfo.TypeErase = FLASH_TYPEERASE_PAGES;
 	Local_eraseInfo.Banks = FLASH_BANK_1;
 	Local_eraseInfo.PageAddress = ImageAddress;
-	Local_eraseInfo.NbPages =	22;
+	Local_eraseInfo.NbPages =	44;
 
 	HAL_FLASH_Unlock(); //Unlocks the flash memory
 	Local_retVal = HAL_FLASHEx_Erase(&Local_eraseInfo, &Local_u32PageError); //Deletes given sectors

@@ -14,7 +14,7 @@
 
 
 #ifndef CBC
-  #define CBC 0
+  #define CBC 1
 #endif
 
 #ifndef ECB

@@ -50,15 +50,17 @@ typedef uint8_t ReceiveFWUartType;
 #define ESP_SEND_HEADER_FLAG  		0x07U
 #define HEADER_FLAG_RECEIVED  		0x08U
 #define HEADER_FLAG_INVALID  		0x09U
-#define HEADER_FLAG_FW_INFO			0x0CU
-#define GATEWAY_ACCEPT_PACKET 		0x0AU
-#define ESP_SEND_NEXT_PACKET  		0x0BU
+
+#define MASTER_ACCEPT_PACKET 		0x0BU
+#define ESP_SEND_NEXT_PACKET  		0x0AU
+#define MASTER_RECEIVE_ALL			0x0CU
 /*CONFIRM DOWNLOADING DONE*/
 #define ESP_DOWNLOAD_DONE    		0x20U
 #define PACKET_1024bytes	 		1024U
+#define PACKET_255bytes				255U
 #define PACKET_112bytes				112U
 #define PACKET_64bytes				64U
-#define HEADER_CONFIG_SIZE 	 		32U
+#define HEADER_CONFIG_SIZE 	 		16U
 
 /**************************************************************************/
 /*                         Prototype Funcion                              */

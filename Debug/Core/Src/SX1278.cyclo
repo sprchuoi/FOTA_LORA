@@ -11,10 +11,10 @@
 ../Core/Src/SX1278.c:167:9:SX1278_LoRaRxPacket	3
 ../Core/Src/SX1278.c:190:5:SX1278_LoRaEntryTx	3
 ../Core/Src/SX1278.c:221:5:SX1278_LoRaTxPacket	3
-../Core/Src/SX1278.c:242:6:SX1278_init	1
-../Core/Src/SX1278.c:256:5:SX1278_transmit	2
-../Core/Src/SX1278.c:264:5:SX1278_receive	1
-../Core/Src/SX1278.c:268:9:SX1278_available	1
-../Core/Src/SX1278.c:272:9:SX1278_read	2
-../Core/Src/SX1278.c:281:9:SX1278_RSSI_LoRa	1
-../Core/Src/SX1278.c:288:9:SX1278_RSSI	1
+../Core/Src/SX1278.c:244:6:SX1278_init	1
+../Core/Src/SX1278.c:258:5:SX1278_transmit	2
+../Core/Src/SX1278.c:266:5:SX1278_receive	1
+../Core/Src/SX1278.c:270:9:SX1278_available	1
+../Core/Src/SX1278.c:274:9:SX1278_read	2
+../Core/Src/SX1278.c:283:9:SX1278_RSSI_LoRa	1
+../Core/Src/SX1278.c:290:9:SX1278_RSSI	1

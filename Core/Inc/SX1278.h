@@ -237,6 +237,7 @@ static const uint8_t SX1278_LoRaBandwidth[10] = { 0, //   7.8KHz,
 #define MCU_ACKNOWLEDGE_BACKUP_CODE_CORRECT     		0x7Au
 #define MCU_ACKNOWLEDGE_BACKUP_CODE_NOT_CORRECT 		0x7Bu
 #define GW_ACKNOWLEDGE_END_OTA							0x7Cu
+#define GW_REQ_PARAMETER								0x8Cu
 //NRC CODE
 #define GW_OUTOFREQUEST_ERROR							0x1Fu
 #define GW_REQUEST_UPDATE_ERROR 						0x2Fu
@@ -245,6 +246,10 @@ static const uint8_t SX1278_LoRaBandwidth[10] = { 0, //   7.8KHz,
 #define BL_ERROR_KEY									0x5Fu
 #define MCU_PACKET_INCORRECT							0x2Fu
 #define MCU_IMAGE_CRC_NOT_CORRECT						0x8Fu
+
+#define ADDRESS__MAC_NODE_1 							0x26011BCD
+#define ADDRESS__MAC_NODE_2							    0x26011DEF
+#define ADDRESS__MAC_NODE_3 							0x260120F0
 // Address define
 #define BROADCAST_ADDR 									0xffu
 
