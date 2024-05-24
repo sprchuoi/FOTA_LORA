@@ -90,6 +90,8 @@ uint32_t CounterInsite =INITIAL_VALUE_ZERO;
 uint32_t SysTem_State = IDLE;
 uint32_t gl_flagRequest = INITIAL_VALUE_ZERO;
 uint8_t buffer_req_2[16];
+uint8_t buffer_flag[16];
+uint8_t Flag;
 /* DUMP format */
 const uint32_t config_LoRa[1] __attribute__((section(".config_LoRa"))) = {GW_CONFIG_PARAMETER_SF_BW_CR_DEFAULT};
 /* USER CODE END 0 */
@@ -159,6 +161,7 @@ int main(void)
   // Init timer
   //HAL_TIM_Base_Start_IT(&htim2);
 
+
   //Test Flash
   //RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_IDLE);
 
@@ -176,6 +179,7 @@ int main(void)
 //
 //	  		break;
 		case SYS_NEW_UPDATE_REQ:
+			RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x04);
 			ReceiveFWUpdate_MainFunc();
 			break;
 		case SYS_RECEIVE_UPDATE:
@@ -202,37 +206,42 @@ int main(void)
 			FL_PacketLoRaSend_START();
 			break;
 		case SYS_DONE_UPDATE:
-			FL_PacketLoRaDone_OTA();
+			ReceiveFWUpdate_MainFunc();
+			HAL_TIM_Base_Start_IT(&htim2);
+			RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x00);
+			//FL_PacketLoRaDone_OTA();
+
 			break;
 		default:
 			break;
 	  }
-//	  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData(&gl_flagRequest);
-//	  if(gl_flagRequest == 0x01){
-//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
-//		 Send_request(&SX1278_1, ADDRESS__MAC_NODE_1, buffer_req_2, GW_REQ_PARAMETER);
-//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
-//		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
-//
-//
-//
-//	  }
-//	  else if(gl_flagRequest == 0x02){
-//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
-//		 Send_request(&SX1278_1, ADDRESS__MAC_NODE_2, buffer_req_2, GW_REQ_PARAMETER);
-//		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
-//		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
-//	  }
-//	  else if(gl_flagRequest = 0x03){
-//		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
-//		  Send_request(&SX1278_1, ADDRESS__MAC_NODE_3, buffer_req_2, GW_REQ_PARAMETER);
-//		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
-//		  //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
-//
-//	  }
+	  UI_Main_FLASHING();
+	  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData(&gl_flagRequest);
+	  if(gl_flagRequest == 0x01){
+		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
+		 Send_request(&SX1278_2, ADDRESS__MAC_NODE_1, buffer_req_2, GW_REQ_PARAMETER);
+		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
+
+
+
+	  }
+	  else if(gl_flagRequest == 0x02){
+		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
+		 Send_request(&SX1278_2, ADDRESS__MAC_NODE_2, buffer_req_2, GW_REQ_PARAMETER);
+		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
+	  }
+	  else if(gl_flagRequest == 0x03){
+		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
+		  Send_request(&SX1278_2, ADDRESS__MAC_NODE_3, buffer_req_2, GW_REQ_PARAMETER);
+		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+		  //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
+
+	  }
 	  gl_flagRequest = 0x00;
 		 //HAL_UART_Transmit(&huart2, &buffer_resp_2, 16, HAL_MAX_DELAY);
-	  UI_Main_FLASHING();
+
 
 
 	  //HAL_UART_Transmit(&huart2, "Hello ESP", 9, HAL_MAX_DELAY);
@@ -489,9 +498,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 999;
+  htim2.Init.Prescaler = 5543;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 7999;
+  htim2.Init.Period = 64934;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)

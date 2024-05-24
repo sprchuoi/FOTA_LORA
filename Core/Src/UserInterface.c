@@ -195,6 +195,7 @@ void UI_Main_FLASHING(void){
 			HAL_Delay(2000);
 			UI_Clean();
 			UI_Init_Flashing_Screen();
+			RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_IDLE);
 			break;
 		}
 		case UI_DISPLAYERROR:

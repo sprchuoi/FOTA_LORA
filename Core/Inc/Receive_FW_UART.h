@@ -61,6 +61,7 @@ typedef uint8_t ReceiveFWUartType;
 #define PACKET_112bytes				112U
 #define PACKET_64bytes				64U
 #define HEADER_CONFIG_SIZE 	 		16U
+#define DONE_OTA 					0xFC
 
 /**************************************************************************/
 /*                         Prototype Funcion                              */

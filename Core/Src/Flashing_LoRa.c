@@ -321,6 +321,14 @@ void Wait_Start_OTA(void){
 		if(counter_tx == 10){
 			RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_IDLE);
 			RTE_RUNNABLE_UI_ERROR_WriteData(GW_OUTOFREQUEST_ERROR);
+			__HAL_DBGMCU_FREEZE_IWDG();
+			hiwdg.Instance = IWDG;
+			hiwdg.Init.Prescaler = IWDG_PRESCALER_4;
+			hiwdg.Init.Reload = 9;
+			if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+			{
+				Error_Handler();
+			}
 		}
 
 
@@ -525,15 +533,15 @@ void FL_PacketLoRaDone_OTA(void){
 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-//  if (htim->Instance == TIM2) {
-//	  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData(&gl_FlagLoraSendDevice);
-//	  if(gl_FlagLoraSendDevice == 0x00)
-//		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x01);
-//	  else if(gl_FlagLoraSendDevice == 0x01)
-//		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x02);
-//	  else if(gl_FlagLoraSendDevice == 0x02)
-//		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x03);
-//	  else if(gl_FlagLoraSendDevice == 0x03)
-//		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x01);
-  //}
+  if (htim->Instance == TIM2) {
+	  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData(&gl_FlagLoraSendDevice);
+	  if(gl_FlagLoraSendDevice == 0x00)
+		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x01);
+	  else if(gl_FlagLoraSendDevice == 0x01)
+		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x02);
+	  else if(gl_FlagLoraSendDevice == 0x02)
+		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x03);
+	  else if(gl_FlagLoraSendDevice == 0x03)
+		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x01);
+  }
 }

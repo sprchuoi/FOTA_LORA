@@ -77,6 +77,9 @@ void ReceiveFWUpdate_MainFunc(void){
 		{
 			// Request ESP send Update
 			gl_u8RXBuffer_Flag_Req_Bytes = NEW_UPDATE_REQUEST_ACCEPT;
+			// Stop IT Timer
+			HAL_TIM_Base_Stop_IT(&htim2);
+			RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x04);
 			F_Erase_Image(IMAGE_NEW_FIRMWARE);
 			HAL_UART_Transmit(&huart2, &gl_u8RXBuffer_Flag_Req_Bytes, 1, HAL_MAX_DELAY);
 			// Erase APPLU address to Update
@@ -112,7 +115,7 @@ void ReceiveFWUpdate_MainFunc(void){
 			gl_u32ConfigLoRa =(gl_u8RXBuffer_Header[14] << SHIFT_24_BIT) | (gl_u8RXBuffer_Header[12] << SHIFT_16_BIT)
 							 |(gl_u8RXBuffer_Header[11] <<  SHIFT_8_BIT)  | (gl_u8RXBuffer_Header[13] << SHIFT_0_BIT);
 			//Update Parameter
-			F_FlashWordToAddress(FLAG_PARAMETER_GW_CONFIG, gl_u32ConfigLoRa);
+			//F_FlashWordToAddress(FLAG_PARAMETER_GW_CONFIG, gl_u32ConfigLoRa);
 
 
 
@@ -125,7 +128,8 @@ void ReceiveFWUpdate_MainFunc(void){
 				GW_voidEraseRestoreConfigPage(FLAG_STATUS_BANKSECOND_APP_VER_ADDRESS,(uint32_t)gl_u16AppVersion);
 				GW_voidEraseRestoreConfigPage(FLAG_STATUS_SIZE_BANKSECOND_REGION_ADDRESS,gl_u32ImgSize);
 				GW_voidEraseRestoreConfigPage(FLAG_STATUS_ADDRESS_TARGET_ADDRESS,gl_u32NodeAddr);
-				GW_voidEraseRestoreConfigPage(FLAG_PARAMETER_GW_CONFIG,GW_CONFIG_PARAMETER_SET);
+				GW_voidEraseRestoreConfigPage(FLAG_PARAMETER_GW_CONFIG,gl_u32ConfigLoRa);
+				GW_voidEraseRestoreConfigPage(FLAG_STATUS_GW_CONFIG,GW_CONFIG_PARAMETER_SET);
 				RTE_RUNNABLE_APP_VER_WriteData(gl_u16AppVersion);
 				RTE_RUNNABLE_CODE_SIZE_WriteData(gl_u32ImgSize);
 				//RTE_RUNNABLE_CRC_VALUE_WriteData(gl_u32CRCValue);
@@ -149,9 +153,10 @@ void ReceiveFWUpdate_MainFunc(void){
 				__HAL_UART_DISABLE_IT(&huart2 , UART_IT_RXNE);
 			}
 			else{
+				__HAL_UART_ENABLE_IT(&huart2 , UART_IT_RXNE);
 				/*Invalid Request*/
 				gl_u8RXBuffer_Flag_Req_Bytes = INVALID_REQUEST;
-				HAL_UART_Transmit(&huart2, &gl_u8RXBuffer_Flag_Req_Bytes, 1, HAL_MAX_DELAY);
+				//HAL_UART_Transmit(&huart2, &gl_u8RXBuffer_Flag_Req_Bytes, 1, HAL_MAX_DELAY);
 			}
 			memset(gl_u8RXBuffer_Header , 0x00 , 16);
 			break;
@@ -172,6 +177,11 @@ void ReceiveFWUpdate_MainFunc(void){
 				//HAL_UART_Receive_IT(&huart2, gl_u8RXBuffer, PACKET_1024bytes, HAL_MAX_DELAY);
 				//HAL_UART_Receive_IT(&huart2, gl_u8RXBuffer, PACKET_1024bytes);
 				gl_u8NumberPacket_Uart--;
+				/*Calculate Progress*/
+				gl_u8DonwLoadPercentProogess = (float)gl_u32ReceiveBytes /(float)gl_u32ImgSize;
+				gl_u8DownLoadUpdateProgress = gl_u8DonwLoadPercentProogess*100;
+				/*Write to RTE */
+				RTE_RUNNABLE_DOWNLOAD_PROGRESS_WriteData(gl_u8DownLoadUpdateProgress);
 				//Flash to block
 				HAL_UART_Transmit(&huart2, &gl_u8RXBuffer_Flag_Req_Bytes, 1, HAL_MAX_DELAY);
 				__HAL_UART_ENABLE_IT(&huart2 , UART_IT_RXNE);
@@ -182,12 +192,13 @@ void ReceiveFWUpdate_MainFunc(void){
 			if((gl_u8NumberPacket_Uart == 0)&&(gl_u32Remain_Byte > 0))
 			{
 				gl_u8RXBuffer_Flag_Req_Bytes = MASTER_RECEIVE_ALL;
+
 				HAL_UART_Transmit(&huart2, &gl_u8RXBuffer_Flag_Req_Bytes, 1, HAL_MAX_DELAY);
 				//F_FlashBlockToAddress(gl_u8RXBuffer, gl_u32Remain_Byte);
 				gl_u32ReceiveBytes += gl_u32Remain_Byte;
 				RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_REQUEST_OTA);
-				gl_RXUartInternal_State = RX_DONE_INSTALL_FW;
-				GW_State_Save_State((uint32_t)SYS_REQUEST_OTA);
+				gl_RXUartInternal_State = RX_END_STATE;
+				//GW_State_Save_State((uint32_t)SYS_REQUEST_OTA);
 				__HAL_UART_ENABLE_IT(&huart2 , UART_IT_RXNE);
 
 			}
@@ -197,25 +208,14 @@ void ReceiveFWUpdate_MainFunc(void){
 			else{
 				/*ERROR*/
 			}
-			/*Calculate Progress*/
-			gl_u8DonwLoadPercentProogess = (float)gl_u32ReceiveBytes /(float)gl_u32ImgSize;
-			gl_u8DownLoadUpdateProgress = gl_u8DonwLoadPercentProogess*100;
-			/*Write to RTE */
-			RTE_RUNNABLE_DOWNLOAD_PROGRESS_WriteData(gl_u8DownLoadUpdateProgress);
+
 			break;
-		}
-		case RX_DONE_INSTALL_FW :
-		{
-			uint8_t retVal = RTE_RUNNABLE_SYSTEM_STATE_ReadData(&gl_u8SystemState);
-			if(retVal == RTE_E_OKE){
-				if(gl_u8SystemState == SYS_DONE_UPDATE){
-					gl_u8RXBuffer_Flag_Req_Bytes ==RX_END_STATE;
-				}
-			}
 		}
 		case RX_END_STATE:
 		{
 			__HAL_UART_ENABLE_IT(&huart2 , UART_IT_RXNE);
+			gl_u8RXBuffer_Flag_Req_Bytes = DONE_OTA;
+			HAL_UART_Transmit(&huart2, &gl_u8RXBuffer_Flag_Req_Bytes, 1, HAL_MAX_DELAY);
 			gl_u32NodeAddr = INITIAL_VALUE_ZERO;
 			gl_u8TypeFlag = INITIAL_VALUE_ZERO;
 			gl_u32ImgSize =INITIAL_VALUE_ZERO;
