@@ -19,3 +19,11 @@ FUOTA LoRA --- GRADUATE THESIS
 5- Function
 
 Bootloader program update Application for STM32 , contains check CRC , verify packet , encryption AES
+
+6-Memory construction
+
+![image](https://github.com/sprchuoi111/FOTA_LORA/assets/91411014/2d55d1f2-3618-4a4b-927e-80962f5e2e35)
+
+7- Security process
+
+![image](https://github.com/sprchuoi111/FOTA_LORA/assets/91411014/15d06025-6b83-4f71-b451-2de8521561f2)
