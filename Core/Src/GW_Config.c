@@ -59,9 +59,9 @@ void GW_voidEraseRestoreConfigPage(uint32_t Copy_u32Address, uint32_t Copy_u32Ne
 
 void GW_Config_Init(void){
 	SX1278_init(&SX1278_1, 434000000, SX1278_POWER_17DBM, SX1278_LORA_SF_12,
-				SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_EN, 16);
+			SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_EN, 16);
 	SX1278_init(&SX1278_2, 433000000, SX1278_POWER_17DBM, SX1278_LORA_SF_12,
-					SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_EN, 16);
+			SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_EN, 16);
 
 	//init Lora RA-02 spi 2 RX mode
 	//SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
@@ -72,6 +72,10 @@ void GW_Config_Init(void){
 
 void GW_State_Save_State(uint8_t State){
 	GW_voidEraseRestoreConfigPage(FLAG_STATE_GW_CONFIG,State );
+}
+void GW_Reset_State(void){
+	uint8_t flag_reset = 0xFB;
+	HAL_UART_Transmit(&huart2,&flag_reset, 1, HAL_MAX_DELAY);
 }
 void GW_State_Init(void){
 	uint8_t local_state = 0 ;
@@ -88,18 +92,20 @@ void GW_Config_SetUp(void){
 	uint32_t GW_u32LocalParameter= GW_Config_GetParameter(FLAG_PARAMETER_GW_CONFIG);
 	// Get Parameter
 
-	if(GW_u32LocalStatus_GW_Config == GW_CONFIG_PARAMETER_RESET ){
+	if(GW_u32LocalStatus_GW_Config == GW_CONFIG_PARAMETER_SET ){
 
 		// SET CONFIG Value as Default
 		GW_voidEraseRestoreConfigPage(FLAG_PARAMETER_GW_CONFIG ,GW_CONFIG_PARAMETER_SF_BW_CR_DEFAULT );
 	}
-	if(GW_u32LocalStatus_GW_Config == GW_CONFIG_PARAMETER_SET ){
+	if(GW_u32LocalStatus_GW_Config == GW_CONFIG_PARAMETER_RESET ){
 		// do nothing
 	}
 	RTE_RUNNABLE_CONFIG_LORA_ReadData(&GW_u32LocalParameter);
 	u8SF = (GW_u32LocalParameter >> SHIFT_16_BIT)& 0xFF ;
 	u8BW = (GW_u32LocalParameter >> SHIFT_8_BIT)& 0xFF ;
 	u8CR = (GW_u32LocalParameter >> SHIFT_0_BIT)& 0xFF ;
+	SX1278_init(&SX1278_1, 434000000, SX1278_POWER_17DBM, u8SF,
+			u8BW, u8CR, SX1278_LORA_CRC_EN, 16);
 }
 
 

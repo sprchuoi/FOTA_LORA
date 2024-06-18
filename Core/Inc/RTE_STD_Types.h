@@ -15,6 +15,7 @@ typedef uint8_t Flash_StateType;
 typedef uint8_t Std_ReturnType;
 
 // System State Macro
+#define    WAIT_FOR_ESP_CONNECT		   0xaU
 #define    SYS_IDLE                    0x0u
 #define    SYS_NEW_UPDATE_REQ          0x1u
 #define    SYS_RECEIVE_UPDATE          0x2u

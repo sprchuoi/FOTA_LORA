@@ -6,16 +6,11 @@
  */
 #include "Encrypt_if.h"
 #include "Flash_If.h"
-
-
 static uint8_t gl_u8CipherText[80];
 static uint8_t gl_u8FwFragment[64];
 static uint8_t gl_u8SystemState;
 volatile uint32_t gl_ReadAddress;
 static uint16_t gl_u16NoPacket;
-static uint8_t gl_u8Flag_Packet;
-static uint8_t gl_u8FlagActiveAddr;
-static uint32_t gl_u32Version;
 static uint32_t gl_u32CRC_FragmentFW;
 struct AES_ctx ctx_fw;
 struct AES_ctx ctx_fw_des;
@@ -43,6 +38,7 @@ uint32_t Calculate_CRC_firmware(uint8_t *buffer_firmware){
 void Encrypt_MainFunc()
 {
 	gl_u32CRC_FragmentFW = INITIAL_VALUE_ZERO;
+	uint8_t local_flag_request=INITIAL_VALUE_ZERO;
 	Std_ReturnType retVal = RTE_RUNNABLE_SYSTEM_STATE_ReadData(&gl_u8SystemState);
 	retVal = RTE_RUNNABLE_PACKET_SEND_LORA_NUM_ReadData(&gl_u16NoPacket);
 	gl_ReadAddress = STORE_AREA_START_ADDRESS +(gl_u16NoPacket-1)*64;
@@ -58,10 +54,11 @@ void Encrypt_MainFunc()
 			//decrypt fw
 			//Decrypt
 			gl_u32CRC_FragmentFW = Calculate_CRC_firmware((uint8_t*) gl_u8FwFragment);
-			RTE_RUNNABLE_PACKET_SEND_LORA_NUM_ReadData(&gl_u16NoPacket);
+			//RTE_RUNNABLE_PACKET_SEND_LORA_NUM_ReadData(&gl_u16NoPacket);
+			RTE_RUNNABLE_FLAG_LORA_RESP_ReadData(&local_flag_request);
 			gl_u8CipherText[0]= ADDR_BROADCAST;
 			gl_u8CipherText[1]= ADDR_BROADCAST;
-			gl_u8CipherText[2] =FL_FRAGMENT_FIRMWARE;
+			gl_u8CipherText[2] =local_flag_request;
 			gl_u8CipherText[3]= gl_u16NoPacket >> SHIFT_8_BIT;
 			gl_u8CipherText[4]= gl_u16NoPacket >> SHIFT_0_BIT;
 			gl_u8CipherText[8] = gl_u32CRC_FragmentFW >>SHIFT_24_BIT;
@@ -82,6 +79,40 @@ void Encrypt_MainFunc()
 	}
 }
 void Decrypt_MainFunc(uint8_t * gl_u8FwFragment){
+	uint32_t start,end, duration;
+	float duration_ms, duration_s;
+
+//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_10);
+	start = __HAL_TIM_GET_COUNTER(&htim1);
 	AES_CBC_decrypt_buffer(&ctx_fw_des, gl_u8FwFragment, 1024);
+	end = __HAL_TIM_GET_COUNTER(&htim1);
+	//reset counter
+	TIM1->CNT = 0;
+//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_10);
+	if (end >= start) {
+		duration = end - start;
+	} else {
+		duration = (0xFFFF - start) + end;
+	}
+	 // Chuyển đổi và xuất kết quả qua UART
+	char buffer[100];
+
+	sprintf(buffer, "Status:Successful! \n");
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+	if (duration < 1000) {
+	    sprintf(buffer, "Execution time: %lu us\r\n", duration);
+	} else if (duration < 1000000) {
+	    duration_ms = duration / 1000.0;
+	    sprintf(buffer, "Execution time: %.2f ms\r\n", duration_ms);
+	} else {
+	    duration_s = duration / 1000000.0;
+	    sprintf(buffer, "Execution time: %.2f s\r\n", duration_s);
+	}
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+	sprintf(buffer, "Key: 2B7E151628AED2A6ABF7158809CF4F3C \r\n");
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+	sprintf(buffer, "IV: 000102030405060708090a0b0c0d0e0f \r\n");
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
 }
 

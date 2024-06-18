@@ -24,6 +24,7 @@ typedef uint8_t ReceiveFWUartType;
 #define RX_DONE_INSTALL_FW			0x06U
 #define RX_END_STATE	  			0x0BU
 #define RX_DENY_UPDATE 	  			0x0CU
+#define RX_WAIT_FOR_CONNECT_WIFI    0x0DU
 
 /**************************************************************************/
 /*                        LoRa SPI Protocol                               */
@@ -37,8 +38,15 @@ typedef uint8_t ReceiveFWUartType;
 /**************************************************************************/
 /*                         Private Macros                                 */
 /**************************************************************************/
+
+// STATE CONNECT WIFI
+#define ESP_RESET_SPI 				0xF0  // REDEFINE IN Hear
+
+#define WIFI_CONNECTED 				0xF1 // // REDEFINE IN Hear
 /*ESP To GATEWAY NOTIFY NEW FIRMWARE */
 #define NEW_UPDATE_REQUEST	  		0x01U
+
+
 
 /* ERROR HANDLE MESSEGE GATEWAY TO ESP*/
 #define SYSTEM_STATE_UNDEFINE 		0x02U
@@ -60,8 +68,8 @@ typedef uint8_t ReceiveFWUartType;
 #define PACKET_255bytes				255U
 #define PACKET_112bytes				112U
 #define PACKET_64bytes				64U
-#define HEADER_CONFIG_SIZE 	 		16U
-#define DONE_OTA 					0xFC
+#define HEADER_CONFIG_SIZE 	 		20U
+#define DONE_OTA 					0x7BU
 
 /**************************************************************************/
 /*                         Prototype Funcion                              */

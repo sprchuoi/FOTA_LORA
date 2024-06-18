@@ -27,11 +27,17 @@ static uint16_t  gl_u16NumPacketLoraFWVar = INITIAL_VALUE_ZERO;
 static uint8_t  gl_u8FlagLoRaRespVar = INITIAL_VALUE_ZERO;
 static uint32_t  gl_u32FlagLoraConfigVar = INITIAL_VALUE_ZERO;
 static uint8_t 	gl_u8FlagLoRa_DeviceVar = INITIAL_VALUE_ZERO;
-static uint32_t gl_u32Active_AddressVar = INITIAL_VALUE_ZERO;
 
 static uint8_t gl_u8EncyptedBufferFlagVar = INITIAL_VALUE_ZERO;
 
 static uint8_t *gl_DataBufferLoRaPtr =  NULL_PTR;
+
+static uint8_t gl_u8NumIndex_Node =INITIAL_VALUE_ZERO ;
+static uint16_t gl_u16totalpacket =INITIAL_VALUE_ZERO ;
+
+static uint8_t gl_u8Flag_Node_Status_Node2 =INITIAL_VALUE_ZERO ;
+static uint8_t gl_u8Flag_Node_Status_Node3 =INITIAL_VALUE_ZERO ;
+static uint8_t gl_u8Flag_Node_Status_Node1 =INITIAL_VALUE_ZERO ;
 /*Port*/
 /**************************************************************************/
 /*                         Ports Write SystemState                         */
@@ -254,6 +260,69 @@ Std_ReturnType Rte_Flag_LoRaRequestDevice_ReadData(uint8_t *FlagLoRa_DeviceVar){
 	return retVal;
 }
 
+/***************************************************************************/
+/* 							Ports Define Node Connect                      */
+/***************************************************************************/
+Std_ReturnType Rte_Flag_NodeRequestIndex_WriteData(uint8_t NumIndex_Node){
+	Std_ReturnType retVal = RTE_E_OKE;
+	gl_u8NumIndex_Node = NumIndex_Node;
+	return retVal;
+}
+Std_ReturnType Rte_Flag_NodeRequestIndex_ReadData(uint8_t *NumIndex_Node){
+	Std_ReturnType retVal = RTE_E_OKE;
+	(*NumIndex_Node) = gl_u8NumIndex_Node;
+	return retVal;
+}
 
+Std_ReturnType Rte_Flag_Total_request_packet_WriteData(uint16_t Num_Total_Packet){
+	Std_ReturnType retVal = RTE_E_OKE;
+	gl_u16totalpacket = Num_Total_Packet;
+	return retVal;
+}
 
+Std_ReturnType Rte_Flag_Total_request_packet_ReadData(uint16_t *Num_Total_Packet){
+	Std_ReturnType retVal = RTE_E_OKE;
+	(*Num_Total_Packet) = gl_u16totalpacket;
+	return retVal;
+}
+
+Std_ReturnType Rte_Flag_NodeStatus_WriteData_Node1(uint8_t Flag_Node_Status){
+	Std_ReturnType retVal = RTE_E_OKE;
+	gl_u8Flag_Node_Status_Node1  = Flag_Node_Status;
+	return retVal;
+}
+
+Std_ReturnType Rte_Flag_NodeStatus_WriteData_Node2(uint8_t Flag_Node_Status){
+	Std_ReturnType retVal = RTE_E_OKE;
+	gl_u8Flag_Node_Status_Node2  = Flag_Node_Status;
+	return retVal;
+}
+
+Std_ReturnType Rte_Flag_NodeStatus_WriteData_Node3(uint8_t Flag_Node_Status){
+	Std_ReturnType retVal = RTE_E_OKE;
+	gl_u8Flag_Node_Status_Node3  = Flag_Node_Status;
+	return retVal;
+}
+Std_ReturnType Rte_Flag_NodeStatus_ReadData_Node1(uint8_t *Flag_Node_Status){
+	Std_ReturnType retVal = RTE_E_OKE;
+	(*Flag_Node_Status) = gl_u8Flag_Node_Status_Node1;
+	return retVal;
+}
+
+Std_ReturnType Rte_Flag_NodeStatus_ReadData_Node2(uint8_t *Flag_Node_Status){
+	Std_ReturnType retVal = RTE_E_OKE;
+	(*Flag_Node_Status) = gl_u8Flag_Node_Status_Node2 ;
+	return retVal;
+}
+
+Std_ReturnType Rte_Flag_NodeStatus_ReadData_Node3(uint8_t *Flag_Node_Status){
+	Std_ReturnType retVal = RTE_E_OKE;
+	(*Flag_Node_Status) = gl_u8Flag_Node_Status_Node3 ;
+	return retVal;
+}
+//Std_ReturnType Rte_Node_Status_WriteData(uint8_t *Flag_Node_Status){
+//	Std_ReturnType retVal = RTE_E_OKE;
+//	(*Flag_Node_Status) = gl_u8Flag_Node_Status_Node3 ;
+//	return retVal;
+//}
 

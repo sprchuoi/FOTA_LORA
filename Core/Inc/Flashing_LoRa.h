@@ -24,6 +24,7 @@ FL_Return_t Flashing_init(uint8_t address_update, uint8_t* buffer_packet, uint8_
 //FL_Return_t Flashing_size(uint8_t address_update, uint8_t* buffer_packet, uint8_t* buffer_resp , uint32_t number_packet);
 FL_Return_t Sequence_Process(uint8_t* buffer_flashing_data );
 uint8_t Flashing_end(uint8_t broadcast_addr , uint32_t unicast_addr, uint8_t* buffer_packet, uint8_t* buffer_resp , uint8_t ACK_REQ);
+uint8_t FL_OTA_end(uint8_t broadcast_addr , uint8_t* buffer_packet, uint8_t* buffer_resp , uint8_t ACK_REQ);
 //void FL_u128PasteBuffer(uint8_t* buffer_packet , uint8_t no_packet );
 uint32_t FL_u32ReadAddressData(uint32_t address);
 void FL_FlashLoRa_INIT(void);

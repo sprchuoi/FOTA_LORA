@@ -215,7 +215,7 @@ static const uint8_t SX1278_LoRaBandwidth[10] = { 0, //   7.8KHz,
 // Sequence flash code define
 
 #define GW_START_OTA	                				0x01u
-#define MCU_ACCEPT_RESPONSE                         	0X02u
+#define MCU_ACCEPT_RESPONSE                         	0X05u
 #define FL_FRAGMENT_FIRMWARE							0xFEu
 #define GW_SYNC_CONFIG									0x20u
 #define MCU_RECEIVED_CONFIG								0x21u

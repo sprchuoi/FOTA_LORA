@@ -12,7 +12,7 @@
 // UI state
 typedef uint8_t UIStateType;
 // UI Cursor Position state
-typedef uint8_t UICursorStateType;
+typedef uint8_t UIErrorType;
 
 #define INIT_VAL_ZERO			  0U
 // define UI UPDATE STATE
@@ -25,11 +25,16 @@ typedef uint8_t UICursorStateType;
 #define		UI_RESENDPACKET_LORA_FW 0x06U
 #define 	UI_DISPLAYERROR		   0x07U
 #define 	UI_DONE_OTA           0X08U
+#define 	UI_DOWNLOADING_FW     0x09U
+#define 	UI_WAIT_FOR_WIFI	  0x0AU
 
-// STATE PRESSED BUTTON
-#define 	RELEASED 			0x00U
-#define 	PRESSED				0x01U
-
+// STATE ERROR
+#define 	UI_ERROR_RESET 			0x01U
+#define 	UI_ERROR_SET			0x00U
+// PROGRESS ESTIMATE
+#define INTER_PACKET_TIME 1.0
+#define PACKET_SIZE 80
+#define PROGRESS_BAR_WIDTH 100  // Chiều rộng của thanh tiến trình
 // define Variable UI
 #define     UI_SCREEN_WIDTH      128
 #define     UI_SCREEN_HIGHT      160
@@ -59,6 +64,7 @@ typedef uint8_t UICursorStateType;
 
 static void UI_Init_Flashing_Screen(void);
 static void UI_Clean(void);
+static void UI_Node_Connect(int nodeIndex, bool connected) ;
 static void UI_WaitForResp(void);
 static void UI_Downloading_FW(void);
 static void UI_UpdateDownloading_FW(uint8_t Var_Progress);
@@ -69,5 +75,9 @@ static void UI_DisplayERROR(uint8_t Var_UIError);
 static void UI_StartOTA(void);
 static void UI_Wait_ACCEPT_OTA(uint16_t Var_Time_request);
 static void UI_Send_Packet_Lost(uint16_t Var_numPacket);
+static void UI_DisplayConfig(uint8_t bw, uint8_t sf, uint8_t cr);
+static void UI_Wait_ForConnect_WiFi();
+static void UI_WiFi_Connected();
+static float UI_CalculateLoRaDataRate(uint8_t sf, uint32_t bw, uint8_t cr);
 
 #endif /* INC_USERINTERFACE_PRIVATEFUNC_H_ */

@@ -48,7 +48,9 @@ SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim4;
 
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -66,11 +68,13 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_IWDG_Init(void);
 static void MX_SPI1_Init(void);
-static void MX_TIM1_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM4_Init(void);
+static void MX_TIM1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
 
@@ -126,11 +130,13 @@ int main(void)
   MX_GPIO_Init();
   //MX_IWDG_Init();
   MX_SPI1_Init();
-  MX_TIM1_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   MX_TIM2_Init();
+  MX_TIM4_Init();
+  MX_TIM1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   //initialize LoRa module 1
   SX1278_hw_1.dio0.port = DIO_GPIO_Port;
@@ -154,16 +160,21 @@ int main(void)
 
   /*GW Config Init first to get the config */
   GW_State_Init();
+  GW_Reset_State();
   GW_Config_Init();
   Encrypt_Address_Read_Init();
   UI_Init();
   ReceiveFWUpdate_Init();
   // Init timer
-  //HAL_TIM_Base_Start_IT(&htim2);
-
+  //HAL_TIM_Base_Start(&htim1);
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_NVIC_DisableIRQ(EXTI1_IRQn);
 
   //Test Flash
-  //RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_IDLE);
+//  RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_REQUEST_OTA);
+//  RTE_RUNNABLE_APP_VER_WriteData(0x0102);
+//  RTE_RUNNABLE_CODE_SIZE_WriteData(0x8C50);
+//  RTE_RUNNABLE_NODE_ADDR_WriteData(ADDRESS__MAC_NODE_2);
 
   /* USER CODE END 2 */
 
@@ -175,10 +186,12 @@ int main(void)
 	  RTE_RUNNABLE_SYSTEM_STATE_ReadData(&SysTem_State);
 	  switch (SysTem_State)
 	  {
-//	  	case SYS_IDLE:
-//
-//	  		break;
+	    case WAIT_FOR_ESP_CONNECT:
+	    	ReceiveFWUpdate_MainFunc();
+	    	break;
 		case SYS_NEW_UPDATE_REQ:
+			F_voidInitVariables();
+			Encrypt_Address_Read_Init();
 			RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x04);
 			ReceiveFWUpdate_MainFunc();
 			break;
@@ -189,10 +202,6 @@ int main(void)
 		case SYS_REQUEST_OTA:
 			UI_Main_FLASHING();
 			Send_Start_OTA();
-			break;
-		case SYS_WAIT_ACCEPT_OTA:
-			UI_Main_FLASHING();
-			Wait_Start_OTA();
 			break;
 		case SYS_CONFIG_LORA:
 			UI_Main_FLASHING();
@@ -207,10 +216,8 @@ int main(void)
 			break;
 		case SYS_DONE_UPDATE:
 			ReceiveFWUpdate_MainFunc();
-			HAL_TIM_Base_Start_IT(&htim2);
 			RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x00);
-			//FL_PacketLoRaDone_OTA();
-
+			FL_PacketLoRaDone_OTA();
 			break;
 		default:
 			break;
@@ -218,28 +225,38 @@ int main(void)
 	  UI_Main_FLASHING();
 	  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData(&gl_flagRequest);
 	  if(gl_flagRequest == 0x01){
-		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
-		 Send_request(&SX1278_2, ADDRESS__MAC_NODE_1, buffer_req_2, GW_REQ_PARAMETER);
-		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+		 HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+
+		 RTE_RUNNABLE_FLAG_NODE_REQUEST_INDEX_WriteData(0x00);
+		 Send_request(&SX1278_2, ADDRESS__MAC_NODE_1, buffer_req_2 , GW_REQ_PARAMETER);
+		 //RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData(false);
+		 RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x04);
 		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
 
 
 
 	  }
 	  else if(gl_flagRequest == 0x02){
-		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
-		 Send_request(&SX1278_2, ADDRESS__MAC_NODE_2, buffer_req_2, GW_REQ_PARAMETER);
-		 RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+		 HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+		 //RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData(false);
+		 RTE_RUNNABLE_FLAG_NODE_REQUEST_INDEX_WriteData(0x01);
+		 Send_request(&SX1278_2, ADDRESS__MAC_NODE_2, buffer_req_2 , GW_REQ_PARAMETER);
+		 //RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData_NODE_1(false);
+		 RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x05);
 		 //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
 	  }
 	  else if(gl_flagRequest == 0x03){
-		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x01);
+		  HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+		  //RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData(false);
+		  RTE_RUNNABLE_FLAG_NODE_REQUEST_INDEX_WriteData(0x02);
 		  Send_request(&SX1278_2, ADDRESS__MAC_NODE_3, buffer_req_2, GW_REQ_PARAMETER);
-		  RTE_RUNNABLE_FLAG_LORA_RESP_WriteData(0x00);
+		  //RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData(false);
+		  RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_WriteData(0x06);
 		  //SX1278_LoRaEntryRx(&SX1278_2, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
-
+		  //RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData(false);
 	  }
-	  gl_flagRequest = 0x00;
+	  //gl_flagRequest = 0x00;
+
 		 //HAL_UART_Transmit(&huart2, &buffer_resp_2, 16, HAL_MAX_DELAY);
 
 
@@ -444,16 +461,16 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 0 */
 
-  TIM_SlaveConfigTypeDef sSlaveConfig = {0};
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM1_Init 1 */
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
+  htim1.Init.Prescaler = 72-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 65535;
+  htim1.Init.Period = 0xffff-1;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -461,9 +478,8 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sSlaveConfig.SlaveMode = TIM_SLAVEMODE_EXTERNAL1;
-  sSlaveConfig.InputTrigger = TIM_TS_ITR0;
-  if (HAL_TIM_SlaveConfigSynchro(&htim1, &sSlaveConfig) != HAL_OK)
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
   {
     Error_Handler();
   }
@@ -498,9 +514,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 5543;
+  htim2.Init.Prescaler = 11015;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 64934;
+  htim2.Init.Period = 65358;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -521,6 +537,84 @@ static void MX_TIM2_Init(void)
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 5543;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 64934;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -612,6 +706,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

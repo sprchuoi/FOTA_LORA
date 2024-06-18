@@ -103,5 +103,33 @@
 /* 							Ports Define Send Send Request LoRa data       */
 /***************************************************************************/
 #define    RTE_RUNNABLE_FLAG_LORA_REQUEST_DEVICE_ReadData		Rte_Flag_LoRaRequestDevice_ReadData
+
+/***************************************************************************/
+/* 							Ports Define Node Connect                      */
+/***************************************************************************/
+#define    RTE_RUNNABLE_FLAG_NODE_REQUEST_INDEX_WriteData		Rte_Flag_NodeRequestIndex_WriteData
+
+
+
+
+#define    RTE_RUNNABLE_FLAG_NODE_STATUS_ReadData_NODE_1         Rte_Flag_NodeStatus_ReadData_Node1
+#define    RTE_RUNNABLE_FLAG_NODE_STATUS_ReadData_NODE_2         Rte_Flag_NodeStatus_ReadData_Node2
+#define    RTE_RUNNABLE_FLAG_NODE_STATUS_ReadData_NODE_3         Rte_Flag_NodeStatus_ReadData_Node3
+
+#define    RTE_RUNNABLE_FLAG_NODE_REQUEST_INDEX_ReadData 		 Rte_Flag_NodeRequestIndex_ReadData
+
+#define    RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData_NODE_1         Rte_Flag_NodeStatus_WriteData_Node1
+#define    RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData_NODE_2         Rte_Flag_NodeStatus_WriteData_Node2
+#define    RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData_NODE_3         Rte_Flag_NodeStatus_WriteData_Node3
+/***************************************************************************/
+/* 							Ports Define Status Device                     */
+/***************************************************************************/
+//#define    RTE_RUNNABLE_FLAG_NODE_STATUS_WriteData				  Rte_Node_Status_WriteData
+//#define    RTE_RUNNABLE_FLAG_NODE_STATUS_ReadData				  Rte_Node_Status_ReadData
+/***************************************************************************/
+/* 							Ports Define Request_Packet                    */
+/***************************************************************************/
+#define    RTE_RUNNABLE_FLAG_TOTAL_REQUEST_PACKET_ReadData		Rte_Flag_Total_request_packet_ReadData
+#define    RTE_RUNNABLE_FLAG_TOTAL_REQUEST_PACKET_WriteData 	Rte_Flag_Total_request_packet_WriteData
 #endif /* INC_API_ENCRYPTPORT_H_ */
 

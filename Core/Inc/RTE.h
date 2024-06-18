@@ -109,4 +109,31 @@ Std_ReturnType Rte_Flag_LoRaRequestDevice_WriteData(uint8_t FlagLoRa_DeviceVar);
 
 Std_ReturnType Rte_Flag_LoRaRequestDevice_ReadData(uint8_t *FlagLoRa_DeviceVar);
 
+/***************************************************************************/
+/* 							Ports Define Node Connect                      */
+/***************************************************************************/
+Std_ReturnType Rte_Flag_NodeRequestIndex_WriteData(uint8_t NumIndex_Node);
+
+Std_ReturnType Rte_Flag_NodeRequestIndex_ReadData(uint8_t *NumIndex_Node);
+
+
+/***************************************************************************/
+/* 							Ports Define Node State                       * /
+/***************************************************************************/
+
+Std_ReturnType Rte_Flag_Total_request_packet_WriteData(uint16_t Num_Total_Packet);
+
+Std_ReturnType Rte_Flag_Total_request_packet_ReadData(uint16_t *Num_Total_Packet);
+
+
+//
+Std_ReturnType Rte_Flag_NodeStatus_ReadData_Node1(uint8_t *Flag_Node_Status);
+Std_ReturnType Rte_Flag_NodeStatus_ReadData_Node2(uint8_t *Flag_Node_Status);
+Std_ReturnType Rte_Flag_NodeStatus_ReadData_Node3(uint8_t *Flag_Node_Status);
+
+
+Std_ReturnType Rte_Flag_NodeStatus_WriteData_Node1(uint8_t Flag_Node_Status);
+Std_ReturnType Rte_Flag_NodeStatus_WriteData_Node2(uint8_t Flag_Node_Status);
+Std_ReturnType Rte_Flag_NodeStatus_WriteData_Node3(uint8_t Flag_Node_Status);
+
 #endif /* INC_RTE_H_ */

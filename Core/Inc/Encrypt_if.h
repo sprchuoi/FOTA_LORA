@@ -16,9 +16,9 @@
 /*****************************************************************************************/
 /*                                   Include headres                                     */
 /*****************************************************************************************/
-#define STORE_AREA_START_ADDRESS 0x08010000
+#define STORE_AREA_START_ADDRESS 0x08012800
 #define ADDRESS_BANK_FIRST (uint32_t)(0x08005000)
-#define ADDRESS_BANK_SECOND (uint32_t)(0x08010000)
+#define ADDRESS_BANK_SECOND (uint32_t)(0x08012800)
 extern struct AES_ctx ctx;
 /************************************************************************************
 

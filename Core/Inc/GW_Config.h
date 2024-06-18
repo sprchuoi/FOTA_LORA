@@ -152,4 +152,6 @@ void GW_Config_SetUp(void);
 void GW_State_Init(void);
 
 void GW_State_Save_State(uint8_t State);
+
+void GW_Reset_State();
 #endif /*_GW_CONFIG_H_*/

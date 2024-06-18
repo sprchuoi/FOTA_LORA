@@ -55,7 +55,9 @@ extern I2C_HandleTypeDef hi2c1;
 
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim2;
-
+extern TIM_HandleTypeDef htim4;
+extern UART_HandleTypeDef huart1;
+extern TIM_HandleTypeDef htim1;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -87,10 +89,12 @@ void Error_Handler(void);
 #define RESET_GPIO_Port GPIOB
 #define DIO_Pin GPIO_PIN_1
 #define DIO_GPIO_Port GPIOB
+#define DIO_EXTI_IRQn EXTI1_IRQn
 #define MODE_Pin GPIO_PIN_2
 #define MODE_GPIO_Port GPIOB
 #define DIO_2_Pin GPIO_PIN_10
 #define DIO_2_GPIO_Port GPIOB
+#define DIO_2_EXTI_IRQn EXTI15_10_IRQn
 #define RESET2_Pin GPIO_PIN_11
 #define RESET2_GPIO_Port GPIOB
 #define SPI2_NSS_Pin GPIO_PIN_12
