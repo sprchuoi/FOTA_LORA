@@ -30,9 +30,11 @@
 #define MAX_TIME_OUT		3000
 #define DATA_LENGTH_FW 		128
 #define TIME_DELAY 			1000
-#define SIZE_BUFFER_8BYTES  8
-#define SIZE_BUFFER_16BYTES 16
-#define SIZE_BUFFER_128BYTES  128
+#define SIZE_BUFFER_8BYTES   8
+#define SIZE_BUFFER_16BYTES  16
+#define SIZE_BUFFER_128BYTES 128
+#define SIZE_BUFFER_112BYTES 112
+
 #define SIZE_BUFFER_80BYTES  80
 typedef enum{
 	LORA_OKE = 				0x0,
@@ -65,8 +67,8 @@ LoRa_Return_t LORA_IF_Stransmit_Data_Frame(SX1278_t *module, uint8_t *txBuffer, 
 LoRa_Return_t LORA_IF_Stransmit_Response_Finish(SX1278_t *module , uint8_t* buffer_resp ,
 		uint8_t ret, uint8_t addr ,uint8_t ACK_req);
 uint16_t  LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer_packet ,uint8_t* buffer_flashing_data,
-		uint8_t addr);
+		uint8_t *local_flag);
 LoRa_Return_t LORA_IF_Stransmit_Response_Flashing(SX1278_t *module ,uint8_t* buffer_resp
-		, uint8_t ret, uint8_t addr ,uint8_t ACK_resp);
+		, uint8_t ret, uint32_t addr ,uint8_t ACK_resp);
 LoRa_Return_t LORA_IF_Stransmit_Response(SX1278_t *module , uint8_t* buffer_resp , uint8_t ret , uint8_t addr , uint8_t ACK_resp);
 #endif /*__SX1278_IF_H__*/

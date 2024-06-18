@@ -20,18 +20,20 @@
 #define START_FLASH_MEMORY			BOOTLOADER_IMAGE
 #define BANKFIRST_IMAGE              	(uint32_t)(0x08005000)      // Origin + Bootloader size (20kB)
 #define FIRST_IMAGE_START_ADDRESS	BANKFIRST_IMAGE
-#define BANKSECOND_IMAGE              	(uint32_t)(0x0800D000)      // Origin + Bootloader size (20kB) + Active Bank (32kB)
-#define SECOND_IMAGE_START_ADDRESS	BANKSECOND_IMAGE
-#define FLASH_BANK_SIZE         	(0X8000)          // 32kB
+#define BANKSECOND_IMAGE              	(uint32_t)(0x08010000)      // Origin + Bootloader size (20kB) + Active Bank (32kB)
+#define DOWNLOAD_BANK_START_ADDRESS	BANKSECOND_IMAGE
+#define FLASH_BANK_SIZE         	(0XB000)          // 44KB
 #define FLASH_PAGE_SIZE_USER    	(0x400)           // 1kB
-#define FLASH_BANK_NUMOFPAGE        (32)          	  // 32 Page
-#define APP_ACTIVE_SIZE				(0X8000)	      // 32kB
+#define FLASH_BANK_NUMOFPAGE        (44)          	  // 44 Page
+#define APP_ACTIVE_SIZE				(0XB000)	      // 44KB
+#define SENSOR_ADDRESS_MAC 			(0x26011DEF)
+//#define SENSOR_ADDRESS_MAC 			(0x260120F0)
+//#define SENSOR_ADDRESS_MAC 			(0x26011BCD)
+#define FIRST_PAGE_NUMBER_IN_BANKFIRST_IMAGE_REGION    0x14U
+#define LAST_PAGE_NUMBER_IN_BANKFIRST_IMAGE_REGION    0x3FU
 
-#define FIRST_PAGE_NUMBER_IN_BANKFIRST_IMAGE_REGION    16
-#define LAST_PAGE_NUMBER_IN_BANKFIRST_IMAGE_REGION    47
-
-#define FIRST_PAGE_NUMBER_IN_BANKSECOND_IMAGE_REGION    48
-#define LAST_PAGE_NUMBER_IN_BANKSECOND_IMAGE_REGION     79
+#define FIRST_PAGE_NUMBER_IN_BANKSECOND_IMAGE_REGION    0x3CU
+#define LAST_PAGE_NUMBER_IN_BANKSECOND_IMAGE_REGION     0x67U
 #define SIZE_IN_WORD_PER_BANK		 	5623		//word = 4 byte // page = 256 word => bank = page * 256 = 22*256
 
 
@@ -48,7 +50,7 @@
 #define ERASED_VALUE                          0xffffffff
 #define FLAG_STATUS_BOOTLOADER                (START_OF_FLAG_REGION)
 #define FLAG_IMAGE							   FLAG_STATUS_BOOTLOADER
-#define  NUM_PACKETS_MAX 						512u
+#define  NUM_PACKETS_MAX 						0x2C0U //704 packet
 //Status region Bank 1
 #define FLAG_STATUS_BANKFIRST_APP_VER_ADDRESS                       (0x0801FC10)
 #define FLAG_STATUS_BANKFIRST_REGION_ADDRESS                        (0x0801FC14)
@@ -62,9 +64,18 @@
 #define FLAG_STATUS_CRC_BANKSECOND_REGION_ADDRESS                   (0x0801FC3C)
 #define FLAG_STATUS_ENTRY_POINT_VALUE_BANKSECOND_REGION_ADDRESS     (0x0801FC40)
 //
+//STATE BL
+//INIT BOOTLOADER
+#define STATE_INITBOOT 				0x01U
+#define STATE_RECEIVE_HEADER 		0x02U
+#define STATE_START_FLASH 		    0x03U
+#define STATE_RECEIVE_FW			0x04U
+#define STATE_SEND_BIT_MAP			0x05U
+#define STATE_SEND_DONE				0x06U
 
 //Status branching define FW active
 #define FLAG_INDICATE_ACTIVE_IMAGE_ADDRESS							(0x0801FC44)
+#define FLAG_INDICATE_ADDRESS_NODE									(0x0801FC04)
 // Branch Switch Constants
 #define BR_SHIFT_LEFT_24_BIT                        24U
 #define BR_SHIFT_LEFT_16_BIT                        16U
@@ -118,7 +129,7 @@ enum eBootloaderErrorCodes{
  } Bitmask;
 // Sequence flash code define
 #define GW_START_FLASHING                				0x01u
-#define MCU_ACCEPT_REQUEST                          	0X02u
+#define MCU_ACCEPT_REQUEST                          	0X05u
 #define FL_FRAGMENT_FIRMWARE							0xfeu
 #define MCU_ENTER_FBL									0x12u
 #define GW_SYNC_CONFIG									0x20u
@@ -132,14 +143,14 @@ enum eBootloaderErrorCodes{
 #define MCU_ACCEPT_RECEIVING_PACKET_OF_CODE     		0x36u
 #define MCU_ACKNOWLEDGE_LINE_OF_CODE_RECEIVED   		0x37u
 #define MCU_WRITE_SUCCESS								0x38u
-#define GW_ACKNOWLEDGE_FINISHING_SENDING_CODE  		    0x39u
+#define GW_SENDMEBITMAP  		                        0x39u
 #define MCU_REQUEST_PACKET_FW_LOSS						0x76u
 #define MCU_ACKNOWLEDGE_FINISHING               		0x77u
 #define MCU_ACKNOWLEDGE_ACTIVE_CODE_CORRECT     		0x78u
 #define MCU_ACKNOWLEDGE_ACTIVE_CODE_NOT_CORRECT 		0x79u
 #define MCU_ACKNOWLEDGE_BACKUP_CODE_CORRECT     		0x7Au
 #define MCU_ACKNOWLEDGE_BACKUP_CODE_NOT_CORRECT 		0x7Bu
-#define GW_ACKNOWLEDGE_FINISHING                        0x7Cu
+#define GW_ACKNOWLEDGE_END_OTA                          0x7Cu
 // Sequence Define Error
 #define BL_LARGE_SIZE 									0x3Fu
 #define MCU_ERROR_CRC									0x4Fu
@@ -783,6 +794,79 @@ void initBitMask(Bitmask *bm);
 *******************************************************************************/
 
 void setBit_BitMask(Bitmask *bm , uint16_t packetnumber);
-
-
+/******************************************************************************
+* Function :  setBit_BitMask(Bitmask *bm , uint16_t packetnumber);
+*//**
+* \b Description:
+*
+* This function is used to Soft Reset
+*
+* PRE-CONDITION:  None
+*
+* POST-CONDITION: None
+*
+* @param [in]    void
+*
+* @return 		 void
+*
+* \b Example Example:
+* @code
+* 	setBit_BitMask(Bitmask *bm , uint16_t packetnumber);
+*
+* @endcode
+*
+* @see  initBitMask
+*
+*******************************************************************************/
+uint8_t BL_Check_CRC(uint32_t CRC_expect , uint8_t *buffer_check);
+/******************************************************************************
+* Function :  BL_Read_Address_Node(Bitmask *bm , uint16_t packetnumber);
+*//**
+* \b Description:
+*
+* This function is used to Soft Reset
+*
+* PRE-CONDITION:  None
+*
+* POST-CONDITION: None
+*
+* @param [in]    void
+*
+* @return 		 void
+*
+* \b Example Example:
+* @code
+* 	BL_Read_Address_Node(Bitmask *bm , uint16_t packetnumber);
+*
+* @endcode
+*
+* @see  initBitMask
+*
+*******************************************************************************/
+uint32_t BL_Read_Address_Node();
+/******************************************************************************
+* Function :  BL_Calculate_CRC(uint8_t *buffer , uint32_t lenght);
+*//**
+* \b Description:
+*
+* This function is used to Soft Reset
+*
+* PRE-CONDITION:  None
+*
+* POST-CONDITION: None
+*
+* @param [in]    void
+*
+* @return 		 void
+*
+* \b Example Example:
+* @code
+* 	BL_Calculate_CRC(uint8_t *buffer , uint32_t lenght);
+*
+* @endcode
+*
+* @see  initBitMask
+*
+*******************************************************************************/
+uint32_t BL_Calculate_CRC(uint8_t *buffer , uint32_t lenght);
 #endif /* INC_BL_PROGRAM_H_ */

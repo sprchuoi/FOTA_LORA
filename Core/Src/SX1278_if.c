@@ -13,7 +13,7 @@ static uint8_t AES_CBC_128_Key[] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0
 static uint8_t AES_CBC_128_IV[]  = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 struct AES_ctx ctx;
 uint16_t  LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer_packet ,uint8_t* buffer_flashing_data ,
-		uint8_t addr){
+		uint8_t *local_flag){
 	counter = 0 ;
 	uint16_t index_fragmemt = 0;
 	//clear data buffer
@@ -25,15 +25,21 @@ uint16_t  LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer_packet
 		if ( ret > 0 ) {
 			ret = SX1278_read(module, (uint8_t*) buffer_packet, ret);
 			AES_init_ctx_iv(&ctx, AES_CBC_128_Key, AES_CBC_128_IV);
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_9);
 			AES_CTR_xcrypt_buffer(&ctx, (uint8_t*) buffer_packet, SIZE_BUFFER_80BYTES);
-			if(buffer_packet[0] == ADDR_BOARDCAST  && buffer_packet[1] == addr  && buffer_packet[2] == FL_FRAGMENT_FIRMWARE){
-				/* Copy data from buffer packet to buffer flashing data*/
-				HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-				index_fragmemt =(buffer_packet[3]<<SHIFT_8_BIT)|(buffer_packet[4] <<SHIFT_0_BIT);
-				return  index_fragmemt;
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_9);
+			if (buffer_packet[0] == ADDR_BOARDCAST && buffer_packet[1] == ADDR_BOARDCAST &&
+			    (buffer_packet[2] == FL_FRAGMENT_FIRMWARE || buffer_packet[2] == GW_SENDMEBITMAP)) {
+			    /* Copy data from buffer packet to buffer flashing data */
+			    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_8);
+			    *local_flag = buffer_packet[2];
+			    index_fragmemt = (buffer_packet[3] << SHIFT_8_BIT) | (buffer_packet[4] << SHIFT_0_BIT);
+			    return index_fragmemt;
 			}
-			else if ( buffer_packet[0] == ADDR_BOARDCAST  && buffer_packet[1] == addr  && buffer_packet[2] == GW_ACKNOWLEDGE_FINISHING_SENDING_CODE ){
-				return  GW_SEND_DONE;
+			if (buffer_packet[0] == ADDR_BOARDCAST && buffer_packet[1] == ADDR_BOARDCAST &&
+						    buffer_packet[2] == GW_ACKNOWLEDGE_END_OTA) {
+						    /* Copy data from buffer packet to buffer flashing data */
+				return GW_SEND_DONE;
 			}
 			else{
 				counter++;
@@ -51,15 +57,20 @@ uint16_t  LORA_IF_GetFragment_Firmware(SX1278_t *module , uint8_t* buffer_packet
 
 uint8_t LORA_IF_TransferData_Frame(SX1278_t *module , uint8_t* buffer_req , uint8_t ret , uint32_t timeout , uint8_t length , uint8_t ACK_req)
 {
-	buffer_req[0] = ADDR_UNICAST;
-	buffer_req[1] = ADDR_NODE_1;
-	buffer_req[2] = ACK_req;
+
+	uint32_t local_u32_NodeAddress = BL_Read_Address_Node();
+	buffer_req[0]= (local_u32_NodeAddress >>SHIFT_24_BIT)& 0xFF ;
+	buffer_req[1] = (local_u32_NodeAddress >>SHIFT_16_BIT)& 0xFF ;
+	buffer_req[2] = (local_u32_NodeAddress >>SHIFT_8_BIT)& 0xFF ;
+	buffer_req[3] = (local_u32_NodeAddress >>SHIFT_0_BIT)& 0xFF ;
+	buffer_req[4] = ACK_req;
 	AES_init_ctx_iv(&ctx, AES_CBC_128_Key, AES_CBC_128_IV);
 	AES_CTR_xcrypt_buffer(&ctx, (uint8_t*) buffer_req, 16);
 	ret = SX1278_LoRaEntryTx(module, length, timeout);
 	ret = SX1278_LoRaTxPacket(module, (uint8_t*) buffer_req, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
 		if (ret) {
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+			//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
 			return 1;
 		}
 		else{
@@ -78,8 +89,9 @@ LoRa_Return_t LORA_IF_Stransmit_Request(SX1278_t *module  , uint8_t* buffer_resp
 		 ret = SX1278_read(module, (uint8_t*) buffer_resp, ret);
 		 AES_init_ctx_iv(&ctx, AES_CBC_128_Key, AES_CBC_128_IV);
 		 AES_CTR_xcrypt_buffer(&ctx,(uint8_t*)buffer_resp, 16);
-		 if(buffer_resp[0]== ADDR_BOARDCAST  && buffer_resp[1] == addr && buffer_resp[2]  == ACK_resp){
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+		 if(buffer_resp[0]== ADDR_BOARDCAST  && buffer_resp[1] == ADDR_BOARDCAST && buffer_resp[2]  == ACK_resp){
+			//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_8);
 			// Response packet
 			return LORA_OKE ;
 		 }
@@ -88,19 +100,24 @@ LoRa_Return_t LORA_IF_Stransmit_Request(SX1278_t *module  , uint8_t* buffer_resp
 }
 
 LoRa_Return_t LORA_IF_Stransmit_Response_Flashing(SX1278_t *module ,uint8_t* TxBuffer
-	, uint8_t ret, uint8_t addr ,uint8_t ACK_resp){
-	TxBuffer[0] = ADDR_UNICAST;
-	TxBuffer[1] = addr;
-	TxBuffer[2] = ACK_resp;
+	, uint8_t ret, uint32_t addr ,uint8_t ACK_resp){
+	// Address
+	TxBuffer[0] = (addr >>SHIFT_24_BIT)& 0xFF ;
+	TxBuffer[1] = (addr >>SHIFT_16_BIT)& 0xFF ;
+	TxBuffer[2] = (addr >>SHIFT_8_BIT)& 0xFF ;
+	TxBuffer[3] = (addr >>SHIFT_0_BIT)& 0xFF ;
+	// ACK
+	TxBuffer[4] = ACK_resp;
 	//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	//AES_CTR_xcrypt_buffer(&ctx,(uint8_t*)buffer_resp, 128);
-	ret = SX1278_LoRaEntryTx(module, SIZE_BUFFER_128BYTES  , MAX_TIME_OUT);
+	ret = SX1278_LoRaEntryTx(module, SIZE_BUFFER_112BYTES  , MAX_TIME_OUT);
 	AES_init_ctx_iv(&ctx, AES_CBC_128_Key, AES_CBC_128_IV);
-	AES_CTR_xcrypt_buffer(&ctx,(uint8_t*)TxBuffer, SIZE_BUFFER_128BYTES);
-	ret = SX1278_LoRaTxPacket(module, (uint8_t*) TxBuffer, SIZE_BUFFER_128BYTES, MAX_TIME_OUT);
+	AES_CTR_xcrypt_buffer(&ctx,(uint8_t*)TxBuffer, SIZE_BUFFER_112BYTES);
+	ret = SX1278_LoRaTxPacket(module, (uint8_t*) TxBuffer, SIZE_BUFFER_112BYTES, MAX_TIME_OUT);
 	if(ret){
 		// Toggle pin led to notify response
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
+		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 		return LORA_OKE;
 
 	}
@@ -135,18 +152,24 @@ LoRa_Return_t LORA_IF_Stransmit_Fragment_Firmware(SX1278_t *module , uint8_t* bu
 
 
 LoRa_Return_t LORA_IF_Stransmit_Response(SX1278_t *module , uint8_t* buffer_resp , uint8_t ret , uint8_t addr , uint8_t ACK_resp){
-	buffer_resp[0]= ADDR_UNICAST;
-	buffer_resp[1] = addr;
-	buffer_resp[2]= ACK_resp;
+	uint32_t local_u32_NodeAddress = BL_Read_Address_Node();
+	BL_Read_Address_Node();
+	buffer_resp[0]= (local_u32_NodeAddress >>SHIFT_24_BIT)& 0xFF ;
+	buffer_resp[1] = (local_u32_NodeAddress >>SHIFT_16_BIT)& 0xFF ;
+	buffer_resp[2] = (local_u32_NodeAddress >>SHIFT_8_BIT)& 0xFF ;
+	buffer_resp[3] = (local_u32_NodeAddress >>SHIFT_0_BIT)& 0xFF ;
+	buffer_resp[4] = ACK_resp ;
 	ret = SX1278_LoRaEntryTx(module, SIZE_BUFFER_16BYTES  , MAX_TIME_OUT);
 	AES_init_ctx_iv(&ctx, AES_CBC_128_Key, AES_CBC_128_IV);
 	AES_CTR_xcrypt_buffer(&ctx,(uint8_t*)buffer_resp, SIZE_BUFFER_16BYTES);
 	ret = SX1278_LoRaTxPacket(module, (uint8_t*) buffer_resp, SIZE_BUFFER_16BYTES, MAX_TIME_OUT);
 	if(ret){
 		// Toggle pin led to notify response
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
+		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 		//HAL_Delay(1000);
 		return LORA_OKE;
 	}
 	return LORA_ERROR;
 }
+

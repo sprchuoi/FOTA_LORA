@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "BL_Program.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,12 +45,11 @@ IWDG_HandleTypeDef hiwdg;
 
 SPI_HandleTypeDef hspi1;
 
+/* USER CODE BEGIN PV */
+
 SX1278_hw_t SX1278_hw;
 
 SX1278_t SX1278;
-
-/* USER CODE BEGIN PV */
-
 
 /* USER CODE END PV */
 
@@ -59,7 +59,6 @@ static void MX_GPIO_Init(void);
 static void MX_IWDG_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -105,8 +104,8 @@ int main(void)
   SX1278_hw.nss.port = NSS_GPIO_Port;
   SX1278_hw.nss.pin = NSS_Pin;
   SX1278_hw.reset.port = RESET_GPIO_Port;
-  SX1278_hw.reset.pin = RESET_Pin;
   SX1278_hw.spi = &hspi1;
+  SX1278_hw.reset.pin = RESET_Pin;
   SX1278.hw = &SX1278_hw;
 //  SX1278_init(&SX1278, 434000000, SX1278_POWER_17DBM, SX1278_LORA_SF_9,
 //  			SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_8, SX1278_LORA_CRC_EN, 16);
@@ -251,10 +250,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, NSS_Pin|GPIO_PIN_9|GPIO_PIN_10, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DIO0_Pin|RESET_Pin|MODE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, RESET_Pin|MODE_Pin|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -263,19 +262,36 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : NSS_Pin */
-  GPIO_InitStruct.Pin = NSS_Pin;
+  /*Configure GPIO pins : NSS_Pin PA9 PA10 */
+  GPIO_InitStruct.Pin = NSS_Pin|GPIO_PIN_9|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(NSS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : DIO0_Pin RESET_Pin MODE_Pin */
-  GPIO_InitStruct.Pin = DIO0_Pin|RESET_Pin|MODE_Pin;
+  /*Configure GPIO pins : RESET_Pin MODE_Pin */
+  GPIO_InitStruct.Pin = RESET_Pin|MODE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DIO0_Pin */
+  GPIO_InitStruct.Pin = DIO0_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(DIO0_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB8 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
