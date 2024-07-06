@@ -1656,10 +1656,8 @@ void BL_voidUpdateHeaders(void)
 	//Structure LoRa Transmit
 	BL_voidSetConfigLoRa();
  8000c76:	f7ff fc0f 	bl	8000498 <BL_voidSetConfigLoRa>
+	// get Config Synchronize
 	/* MCU response MCU_ENTER_FBL to GW and expect get resp as GW_SYNC_CONFIG*/
-
-
-
 	while(1){
 		HAL_NVIC_DisableIRQ(EXTI1_IRQn);
  8000c7a:	2007      	movs	r0, #7

@@ -444,9 +444,6 @@ void BL_voidUpdateHeaders(void)
 	BL_voidSetConfigLoRa();
 	// get Config Synchronize
 	/* MCU response MCU_ENTER_FBL to GW and expect get resp as GW_SYNC_CONFIG*/
-
-
-
 	while(1){
 		HAL_NVIC_DisableIRQ(EXTI1_IRQn);
 		LORA_IF_Stransmit_Response(&SX1278, buffer_resp, ret, ADDR_NODE_1, MCU_ACCEPT_REQUEST);

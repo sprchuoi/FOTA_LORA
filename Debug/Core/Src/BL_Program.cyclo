@@ -21,7 +21,7 @@
 ../Core/Src/BL_Program.c:389:6:BL_voidEraseRestoreHeaderPage	4
 ../Core/Src/BL_Program.c:426:6:BL_voidSetBranchingFlagAndMakeSWR	0
 ../Core/Src/BL_Program.c:437:6:BL_voidUpdateHeaders	3
-../Core/Src/BL_Program.c:512:6:BL_voidReceiveUpdate	12
-../Core/Src/BL_Program.c:629:6:BL_voidFinishBootLoader	0
-../Core/Src/BL_Program.c:663:6:BL_voidMakeSoftWareReset	0
-../Core/Src/BL_Program.c:672:6:HAL_GPIO_EXTI_Callback	4
+../Core/Src/BL_Program.c:509:6:BL_voidReceiveUpdate	12
+../Core/Src/BL_Program.c:626:6:BL_voidFinishBootLoader	0
+../Core/Src/BL_Program.c:660:6:BL_voidMakeSoftWareReset	0
+../Core/Src/BL_Program.c:669:6:HAL_GPIO_EXTI_Callback	4
