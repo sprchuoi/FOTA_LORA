@@ -187,7 +187,7 @@ void ReceiveFWUpdate_MainFunc(void){
 			{
 				//HAL_UART_Receive_IT(&huart2, gl_u8RXBuffer, PACKET_1024bytes, HAL_MAX_DELAY);
 				//HAL_UART_Receive_IT(&huart2, gl_u8RXBuffer, PACKET_1024bytes);
-				HAL_TIM_Base_Stop_IT(&htim4);
+				//HAL_TIM_Base_Stop_IT(&htim4);
 				gl_u8NumberPacket_Uart--;
 				/*Calculate Progress*/
 				gl_u8DonwLoadPercentProogess = (float)gl_u32ReceiveBytes /(float)gl_u32ImgSize;

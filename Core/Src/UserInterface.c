@@ -262,7 +262,7 @@ void UI_Main_FLASHING(void){
 			if(RTE_E_OKE == retVal){
 				UI_DisplayERROR(gl_u8ErrorFlag);
 				// START TIMER FOR RS SW
-
+				HAL_TIM_Base_Start_IT(&htim4);
 			}
 			break;
 		}

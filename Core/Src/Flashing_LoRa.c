@@ -45,6 +45,7 @@ static uint8_t AES_CTR_128_IV[]  = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0
 static uint8_t Counter_Done_OTA  = 0;
 static uint8_t gl_u8Flag_Sendbitmap = 0 ;
 static uint8_t First_OTA = 0;
+static uint8_t Request_OTA_Done = 0;
 //uint32_t FL_uint32localAddress = ACTIVE_IMAGE + 0x80 ;
 FL_Return_t FL_Syns_Config(uint32_t unicast_address, uint8_t* buffer_req, uint8_t* buffer_resp
 	, uint8_t SF ,  uint8_t BandWidth , uint8_t CR ){
@@ -113,6 +114,14 @@ uint8_t Flashing_end(uint8_t broadcast_addr,uint32_t unicast_addr , uint8_t* buf
 		__HAL_GPIO_EXTI_CLEAR_IT(DIO_Pin);
 		HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 		HAL_Delay(2000);
+		if( buffer_packet_Rx[4] != MCU_REQUEST_PACKET_FW_LOSS){
+			Request_OTA_Done++;
+			if(Request_OTA_Done == 10){
+				// Start IT timer to Reset
+				HAL_TIM_Base_Start_IT(&htim4);
+			}
+		}
+		else Request_OTA_Done =0;
 	}
 }
 
@@ -476,7 +485,6 @@ void FL_PacketLoRaDone_OTA(void){
 		Counter_Done_OTA= 0;
 		HAL_TIM_Base_Start_IT(&htim2);
 	}
-
 }
 
 
@@ -518,14 +526,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		  // Reset SW
 		  HAL_TIM_Base_Stop_IT(&htim4);
 		  NVIC_SystemReset();
-		  __HAL_DBGMCU_FREEZE_IWDG();
-		  hiwdg.Instance = IWDG;
-		  hiwdg.Init.Prescaler = IWDG_PRESCALER_4;
-		  hiwdg.Init.Reload = 9;
-		  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
-		  {
-			  Error_Handler();
-		  }
+
 	  }
 	  counter +=1;
   }
@@ -592,8 +593,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)   // <----- The ISR Function We'r
 					//return 1;
 				}
 		}
-
-
 			memset(buffer_resp_2 , 0xff ,16);
 		}
 	}

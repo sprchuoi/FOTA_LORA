@@ -169,15 +169,12 @@ int main(void)
   //HAL_TIM_Base_Start(&htim1);
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_NVIC_DisableIRQ(EXTI1_IRQn);
-
   //Test Flash
 //  RTE_RUNNABLE_SYSTEM_STATE_WriteData(SYS_REQUEST_OTA);
 //  RTE_RUNNABLE_APP_VER_WriteData(0x0102);
 //  RTE_RUNNABLE_CODE_SIZE_WriteData(0x8C50);
 //  RTE_RUNNABLE_NODE_ADDR_WriteData(ADDRESS__MAC_NODE_2);
-
   /* USER CODE END 2 */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
