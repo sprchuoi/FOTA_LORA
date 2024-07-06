@@ -1,0 +1,4 @@
+../Core/Src/SX1278_if.c:27:6:LORA_IF_Init	32	static
+../Core/Src/SX1278_if.c:47:6:LORA_IF_RECIEVE	16	static
+../Core/Src/SX1278_if.c:93:6:LORA_IF_SEND	16	static
+../Core/Src/SX1278_if.c:118:6:HAL_GPIO_EXTI_Callback	24	static
